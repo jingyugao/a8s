@@ -1,5 +1,5 @@
 # Agentfile assembles AGENTS.md, Skills, CLI and native MCP configuration.
-# agent.yaml selects the platform-owned runtime class and registers the agent.
+# agent.yaml declares an AgentDeployment and selects the platform-owned runtime class.
 # The platform owns Codex, database/model configuration, storage and Kubernetes templates.
 SHELL := /bin/bash
 .SHELLFLAGS := -eo pipefail -c
@@ -14,9 +14,9 @@ help:
 	@printf '%s\n' \
 	  'make build    只构建 Agentfile；Codex + Node 由平台 runtime class 提供' \
 	  'make publish  构建并发布镜像与 Agent 包，登记时固定 digest' \
-	  'make create   发布并创建 Agent；相同内容可重复核对' \
+	  'make create   发布并创建 AgentDeployment；相同内容可重复核对' \
 	  'make plan     查看已发布镜像的创建计划，不修改集群' \
-	  'make status   查询原 Deployment 和 Operation' \
+	  'make status   查询 AgentDeployment 和 Operation' \
 	  'make update   更新入口；当前安全更新尚未完成，会明确拒绝' \
 	  'make delete   删除入口；运行中 Agent 会保存下线请求并明确拒绝' \
 	  '             已确认下线或尚未创建 Agent 时，可清理专属支撑服务，保留数据' \

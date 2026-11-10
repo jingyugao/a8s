@@ -2,7 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["PyYAML==6.0.3", "tomli-w==1.2.0"]
 # ///
-"""Build Agentfiles against platform-owned runtime classes and manage agents."""
+"""Build Agentfiles against platform-owned runtime classes and manage AgentDeployments."""
 
 import argparse
 import base64
@@ -118,6 +118,7 @@ class Platform:
         self.agent = yaml.safe_load(manifest.read_text())
         allowed = {
             "apiVersion",
+            "kind",
             "name",
             "agentImage",
             "runtimeClassRef",
@@ -127,9 +128,11 @@ class Platform:
             "update",
         }
         if not isinstance(self.agent, dict) or set(self.agent) - allowed:
-            raise ValueError("Agent YAML 使用 a8s/v1，通过 runtimeClassRef 选择平台运行环境")
+            raise ValueError("AgentDeployment YAML 使用 a8s/v1，通过 runtimeClassRef 选择平台运行环境")
         if self.agent.get("apiVersion") != "a8s/v1":
             raise ValueError("apiVersion 必须为 a8s/v1")
+        if self.agent.get("kind") != "AgentDeployment":
+            raise ValueError("kind 必须为 AgentDeployment")
         self.name = self.agent.get("name", "")
         if not isinstance(self.name, str) or not re.fullmatch(r"[a-z][a-z0-9-]{0,39}", self.name):
             raise ValueError("name 使用小写字母开头，最多 40 个小写字母、数字或横线")
@@ -715,7 +718,7 @@ def main():
             "runtime-publish",
         ],
     )
-    parser.add_argument("file", type=Path, help="one Agent YAML")
+    parser.add_argument("file", type=Path, help="one AgentDeployment YAML")
     parser.add_argument("--image", help="platform runtime image tag; only used by runtime-publish")
     arguments = parser.parse_args()
     if arguments.action == "runtime-publish":

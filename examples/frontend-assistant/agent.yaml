@@ -1,4 +1,5 @@
 apiVersion: a8s/v1
+kind: AgentDeployment
 name: frontend-assistant
 agentImage: 192.168.133.101:30500/a8s:dev
 runtimeClassRef: codex-node
