@@ -1,17 +1,16 @@
-# Standard Dockerfile syntax. The platform resolves the selected runtime class by digest.
-ARG RUNTIME_IMAGE
-FROM ${RUNTIME_IMAGE} AS package-build
-ARG AGENT_NAME
+# Build remote dependencies once. The final image contains only /agent.
+FROM node@sha256:752ea8a2f758c34002a0461bd9f1cee4f9a3c36d48494586f60ffce1fc708e0e AS content
 WORKDIR /agent
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund
+# Anthropic frontend-design, pinned to the complete upstream Skill directory (two files).
+ADD https://raw.githubusercontent.com/anthropics/skills/2c5958ecac7cee2b583967a2c4981d0f4a75c579/skills/frontend-design/SKILL.md ./.agents/skills/frontend-design/SKILL.md
+ADD https://raw.githubusercontent.com/anthropics/skills/2c5958ecac7cee2b583967a2c4981d0f4a75c579/skills/frontend-design/LICENSE.txt ./.agents/skills/frontend-design/LICENSE.txt
 COPY AGENTS.md ./
 COPY .agents/ ./.agents/
 COPY .codex/ ./.codex/
 COPY --chmod=755 bin/ ./node_modules/.bin/
-RUN a8s --json package init --source /agent --name "${AGENT_NAME}" \
-    && a8s --json package build --source /agent --output /opt/a8s/package
+RUN chmod -R a+rX .agents
 
-FROM ${RUNTIME_IMAGE}
-COPY --from=package-build /agent/ /agent/
-COPY --from=package-build /opt/a8s/package/ /opt/a8s/package/
-ENV AGENT_ROOT=/agent PATH=/agent/node_modules/.bin:${PATH}
-WORKDIR /runtime
+FROM scratch
+COPY --from=content /agent/ /agent/

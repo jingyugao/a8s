@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["PyYAML==6.0.3"]
+# dependencies = ["PyYAML==6.0.3", "tomli-w==1.2.0"]
 # ///
 """Build Agentfiles against platform-owned runtime classes and manage agents."""
 
@@ -20,6 +20,7 @@ from decimal import ROUND_CEILING, Decimal
 from pathlib import Path
 from string import Template
 
+import tomli_w
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -260,18 +261,12 @@ class Platform:
         tag = self.agent["agentImage"]
         if not tag.endswith(":dev"):
             raise ValueError("本地源码构建统一使用 :dev 标签；发布时解析固定 digest")
-        print(f"构建 {tag}，继承平台 runtime class {self.runtime_class_ref}", flush=True)
+        print(f"构建独立 Agent 内容镜像 {tag}", flush=True)
         argv = [
             "docker",
             "build",
             "--platform",
             self.runtime_class["platform"],
-            "--build-arg",
-            f"RUNTIME_IMAGE={self.base_image}",
-            "--build-arg",
-            f"AGENT_NAME={self.name}",
-            "--label",
-            f"a8s.io.runtime-class-ref={self.runtime_class_ref}",
             "-f",
             str(self.directory / "Agentfile"),
             "-t",
@@ -280,22 +275,6 @@ class Platform:
         ]
         subprocess.run(argv, check=True, timeout=900)
         image_id = run(["docker", "image", "inspect", tag, "--format", "{{.Id}}"])
-        validation = "const fs=require('fs');if(Number(process.versions.node.split('.')[0])<22)process.exit(1);if(!fs.statSync('/agent/AGENTS.md').isFile())process.exit(1)"
-        run(
-            [
-                "docker",
-                "run",
-                "--rm",
-                "--network=none",
-                "--entrypoint",
-                "node",
-                image_id.strip(),
-                "-e",
-                validation,
-            ],
-            timeout=30,
-        )
-        verify_runtime(image_id.strip(), self.runtime_class)
         (self.state / "image-id.txt").write_text(image_id)
         return {"image": tag, "built": True}
 
@@ -399,47 +378,56 @@ class Platform:
             *registry_flags,
         )
         self.image = resolved["reference"]
-        package = json.loads(
+        self.source = self.state / "images" / resolved["digest"].split(":")[1]
+        marker = self.source / "source.json"
+        if not marker.is_file():
+            self.source.mkdir(parents=True, exist_ok=True)
+            if any(self.source.iterdir()):
+                raise RuntimeError("镜像加载目录含未完成内容；保留原现场，请核对后重试")
+            flags = ["--plain-http"] if registry_flags else []
             run(
                 [
                     "docker",
                     "run",
                     "--rm",
+                    "--user",
+                    f"{os.getuid()}:{os.getgid()}",
+                    "--volume",
+                    f"{self.source}:/output",
                     "--entrypoint",
-                    "a8s",
+                    "a8s-agent-loader",
+                    self.base_image,
+                    "--image",
                     self.image,
-                    "--json",
-                    "package",
-                    "inspect",
-                    "--layout",
-                    "/opt/a8s/package",
-                ]
+                    "--name",
+                    self.name,
+                    "--destination",
+                    "/output/agent",
+                    "--package-layout",
+                    "/output/package",
+                    "--extract-only",
+                    *flags,
+                ],
+                timeout=180,
             )
-        )
-        if package["metadata"]["manifest"]["name"] != self.name:
-            raise RuntimeError("镜像中的 Agent 包名称与 agent.yaml 不一致；请执行 make build publish")
-        labels = json.loads(run(["docker", "image", "inspect", self.image]))[0]["Config"].get("Labels") or {}
-        if labels.get("a8s.io.runtime-class-ref") != self.runtime_class_ref:
-            raise ValueError("Agent 镜像的 runtime class revision 与登记声明不一致；请重新构建并发布 Agent")
+            write_json(marker, {"image": self.image})
+        if json.loads(marker.read_text()) != {"image": self.image}:
+            raise RuntimeError("镜像加载目录身份不一致")
+        package = self.cli_json("package", "inspect", "--layout", self.source / "package")
         self.digest = package["digest"]
         self.package = f"{self.config['A8S_PLATFORM_PACKAGE_REPOSITORY']}@{self.digest}"
-        # The image may carry native MCP configuration, but credentials and model policy remain platform-owned.
-        mcp = run(
-            [
-                "docker",
-                "run",
-                "--rm",
-                "--network=none",
-                "--entrypoint",
-                "sh",
-                self.image,
-                "-c",
-                "if [ -f /agent/.codex/config.toml ]; then cat /agent/.codex/config.toml; fi",
-            ]
-        )
+        mcp_file = self.source / "agent/.codex/config.toml"
+        if mcp_file.exists() and not mcp_file.resolve().is_relative_to((self.source / "agent").resolve()):
+            raise ValueError("MCP 配置必须位于 Agent 内容目录内")
+        mcp = mcp_file.read_text() if mcp_file.exists() else ""
         agent_config = tomllib.loads(mcp)
         if set(agent_config) - {"mcp_servers"}:
             raise ValueError("Agent 的 .codex/config.toml 仅装载 mcp_servers，模型、认证和权限由平台提供")
+        for server in agent_config.get("mcp_servers", {}).values():
+            if "command" in server:
+                server.setdefault("environment_id", "remote")
+                server.setdefault("cwd", self.working_dir)
+        mcp = tomli_w.dumps(agent_config)
         host = json.loads(self.k("get", "configmap", "a8s-host-config", "-o", "json"))["data"]["config.toml"]
         combined = host.rstrip() + "\n\n" + mcp
         tomllib.loads(combined)  # Duplicate server names or malformed TOML fail before submission.
@@ -458,7 +446,7 @@ class Platform:
             "A8S_TENANT": self.scope["tenantId"],
             "A8S_PROJECT": self.scope["projectId"],
             "A8S_EXAMPLE_PLAIN_HTTP": self.config["A8S_PLATFORM_REGISTRY_PLAIN_HTTP"],
-            "A8S_IMAGE_REFERENCE": self.image,
+            "A8S_IMAGE_REFERENCE": self.base_image,
             "A8S_PACKAGE_REFERENCE": self.package,
             "A8S_PACKAGE_DIGEST": self.digest,
         }
@@ -476,20 +464,36 @@ class Platform:
             }
         )
         for document in documents:
-            if document["kind"] not in ("StatefulSet", "Deployment"):
+            if document["kind"] != "Deployment":
                 continue
             template = document["spec"]["template"]
             template["metadata"]["annotations"] = {"a8s.io/agent-intent": self.intent}
             container = template["spec"]["containers"][0]
-            if document["kind"] == "StatefulSet":
-                template["spec"]["volumes"][0]["configMap"]["name"] = f"{self.prefix}-host-config"
-            else:
-                for item in container["env"]:
-                    if item["name"] == "A8S_WORKSPACE_DIRECTORY":
-                        item["value"] = self.working_dir
+            for item in container["env"]:
+                if item["name"] == "A8S_WORKSPACE_DIRECTORY":
+                    item["value"] = self.working_dir
+                elif item["name"] == "A8S_AGENTC_URL":
+                    item["value"] = f"http://{{instance}}.{self.ns}.svc:8094"
+            launch = {
+                "command": ["/usr/local/bin/a8s-agent-loader", "--agentc"],
+                "environment": {
+                    "A8S_AGENT_IMAGE": self.image,
+                    "A8S_AGENT_NAME": self.name,
+                    "A8S_REGISTRY_PLAIN_HTTP": self.config["A8S_PLATFORM_REGISTRY_PLAIN_HTTP"],
+                },
+                "secretRefs": ["a8s-model"],
+                "configMap": f"{self.prefix}-host-config",
+                "controlPort": 8094,
+            }
+            container["env"].extend(
+                [
+                    {"name": "A8S_EXEC_SERVER_URL", "value": "ws://127.0.0.1:8095"},
+                    {"name": "A8S_SANDBOX_LAUNCH", "value": json.dumps(launch)},
+                ]
+            )
         self.kubernetes = self.state / "kubernetes.yaml"
         self.kubernetes.write_text(yaml.safe_dump_all(documents, sort_keys=False, allow_unicode=True))
-        image = {"reference": self.image, "digest": self.image.split("@")[1]}
+        image = {"reference": self.base_image, "digest": self.base_image.split("@")[1]}
         self.registration = {
             "agentc": {
                 "scope": self.scope,
@@ -560,22 +564,18 @@ class Platform:
         registry_flags = ["--plain-http"] if self.config["A8S_PLATFORM_REGISTRY_PLAIN_HTTP"] == "true" else []
         output = run(
             [
-                "docker",
-                "run",
-                "--rm",
-                "--entrypoint",
-                "a8s",
-                self.image,
+                self.cli,
                 "--json",
                 "package",
                 "publish",
                 "--timeout=120s",
                 "--layout",
-                "/opt/a8s/package",
+                self.source / "package",
                 "--ref",
                 self.package,
                 *registry_flags,
-            ]
+            ],
+            env=self.env,
         )
         write_json(self.state / "published-package.json", json.loads(output))
         return {"image": self.image, "package": self.package}
@@ -584,12 +584,7 @@ class Platform:
         self.prepare()
         agentc = self.k("get", "statefulset", f"{self.prefix}-a8s-agentc", "--ignore-not-found", "-o", "json")
         if agentc:
-            template = json.loads(agentc)["spec"]["template"]
-            if (
-                template["metadata"].get("annotations", {}).get("a8s.io/agent-intent") != self.intent
-                or template["spec"]["containers"][0]["image"] != self.image
-            ):
-                raise RuntimeError("已有不同内容的 Agentc；请核对原登记请求，不覆盖旧绑定")
+            raise RuntimeError("仍存在旧的外置 Agentc 资源；请先核对原绑定，不覆盖运行中的实例")
         existing = self.k(
             "get",
             "deployment",
@@ -610,12 +605,6 @@ class Platform:
         self.k("get", "secret", "a8s-server", "a8s-model", "-o", "name")
         self.k("get", "configmap", "a8s-host-config", "-o", "name")
         self.k("apply", "-f", self.kubernetes)
-        self.k(
-            "rollout",
-            "status",
-            f"statefulset/{self.prefix}-a8s-agentc",
-            "--timeout=150s",
-        )
         self.k(
             "rollout",
             "status",

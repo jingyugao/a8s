@@ -69,65 +69,6 @@ spec:
   resources:
     requests: {storage: 5Gi}
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: ${A8S_EXAMPLE_PREFIX}-a8s-agentc
-  namespace: ${A8S_EXAMPLE_NAMESPACE}
-spec:
-  clusterIP: None
-  selector: {app: "${A8S_EXAMPLE_PREFIX}-a8s-agentc"}
-  ports: [{name: agentc, port: 8094}]
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: ${A8S_EXAMPLE_PREFIX}-a8s-agentc
-  namespace: ${A8S_EXAMPLE_NAMESPACE}
-spec:
-  serviceName: ${A8S_EXAMPLE_PREFIX}-a8s-agentc
-  replicas: 1
-  persistentVolumeClaimRetentionPolicy: {whenDeleted: Retain, whenScaled: Retain}
-  selector:
-    matchLabels: {app: "${A8S_EXAMPLE_PREFIX}-a8s-agentc"}
-  template:
-    metadata:
-      labels: {app: "${A8S_EXAMPLE_PREFIX}-a8s-agentc"}
-    spec:
-      automountServiceAccountToken: false
-      nodeSelector: {kubernetes.io/os: linux, kubernetes.io/arch: amd64}
-      containers:
-        - name: agentc
-          image: ${A8S_IMAGE_REFERENCE}
-          command: [/usr/local/bin/a8s-codex-agentc]
-          args:
-            - --listen=0.0.0.0:8094
-            - --host=/usr/local/bin/codex
-            - --runtime-dir=/var/lib/a8s/instance
-            - --package-layout=/opt/a8s/package
-            - --pass-env=PATH,HOME,LANG,TZ,AGENT_ROOT,COLONY_MODEL_API_KEY
-          envFrom: [{secretRef: {name: a8s-model}}]
-          ports: [{name: agentc, containerPort: 8094}]
-          readinessProbe:
-            tcpSocket: {port: agentc}
-            periodSeconds: 2
-          resources:
-            requests: {cpu: 100m, memory: 256Mi}
-            limits: {cpu: "2", memory: 2Gi}
-          volumeMounts:
-            - {name: native-state, mountPath: /var/lib/a8s}
-            - {name: host-config, mountPath: /etc/codex, readOnly: true}
-      volumes:
-        - name: host-config
-          configMap: {name: a8s-host-config}
-  volumeClaimTemplates:
-    - metadata: {name: native-state}
-      spec:
-        accessModes: [ReadWriteOnce]
-        storageClassName: ${A8S_EXAMPLE_STORAGE_CLASS}
-        resources:
-          requests: {storage: 2Gi}
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -155,7 +96,7 @@ spec:
             - {name: A8S_KUBERNETES_NAMESPACE, value: "${A8S_EXAMPLE_NAMESPACE}"}
             - {name: A8S_WORKSPACE_DIRECTORY, value: /home/agent}
             - name: A8S_AGENTC_URL
-              value: http://${A8S_EXAMPLE_PREFIX}-a8s-agentc-0.${A8S_EXAMPLE_PREFIX}-a8s-agentc.${A8S_EXAMPLE_NAMESPACE}.svc:8094
+              value: http://{instance}.${A8S_EXAMPLE_NAMESPACE}.svc:8094
             - {name: A8S_REGISTRY_PLAIN_HTTP, value: "${A8S_EXAMPLE_PLAIN_HTTP}"}
           ports: [{name: http, containerPort: 8090}]
           readinessProbe:

@@ -5,3 +5,5 @@
 !dist/a8s-codex-agentc
 !dist/codex/
 !dist/codex/**
+!scripts/
+!scripts/agent-loader.sh
