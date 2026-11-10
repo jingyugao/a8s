@@ -1,11 +1,12 @@
 # Agentfile assembles AGENTS.md, Skills, CLI and native MCP configuration.
-# agent.yaml declares an AgentDeployment and selects the platform-owned runtime class.
+# deploy/agent.yaml declares an AgentDeployment and selects the platform-owned runtime class.
 # The platform owns Codex, database/model configuration, storage and Kubernetes templates.
 SHELL := /bin/bash
 .SHELLFLAGS := -eo pipefail -c
 .DEFAULT_GOAL := help
-ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../..)
-AGENT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/agent.yaml)
+PROJECT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+ROOT := $(abspath $(PROJECT)/../..)
+AGENT := $(PROJECT)/deploy/agent.yaml
 MANAGE := bash $(ROOT)/scripts/agent.sh
 
 .PHONY: help build publish push plan create status update delete
@@ -23,7 +24,7 @@ help:
 	  '管理端需要 Docker、kubectl、uv；不需要本机安装 Codex 或 Go。'
 
 build:
-	$(MANAGE) build $(AGENT)
+	$(MANAGE) build $(AGENT) --context $(PROJECT)
 
 publish: build
 	$(MANAGE) publish $(AGENT)

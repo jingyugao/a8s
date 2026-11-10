@@ -258,8 +258,9 @@ class Platform:
                 self.cli.write_bytes(result.stdout)
                 self.cli.chmod(0o755)
 
-    def build(self):
-        if not (self.directory / "Agentfile").is_file():
+    def build(self, context=None):
+        directory = context.resolve() if context is not None else self.directory
+        if not (directory / "Agentfile").is_file():
             raise ValueError("Agent 目录必须包含 Agentfile；Dockerfile 由平台 runtime class 维护")
         tag = self.agent["agentImage"]
         if not tag.endswith(":dev"):
@@ -271,10 +272,10 @@ class Platform:
             "--platform",
             self.runtime_class["platform"],
             "-f",
-            str(self.directory / "Agentfile"),
+            str(directory / "Agentfile"),
             "-t",
             tag,
-            str(self.directory),
+            str(directory),
         ]
         subprocess.run(argv, check=True, timeout=900)
         image_id = run(["docker", "image", "inspect", tag, "--format", "{{.Id}}"])
@@ -719,6 +720,7 @@ def main():
         ],
     )
     parser.add_argument("file", type=Path, help="one AgentDeployment YAML")
+    parser.add_argument("--context", type=Path, help="Agentfile build directory; defaults to the YAML directory")
     parser.add_argument("--image", help="platform runtime image tag; only used by runtime-publish")
     arguments = parser.parse_args()
     if arguments.action == "runtime-publish":
@@ -726,7 +728,7 @@ def main():
         return
     platform = Platform(arguments.file)
     if arguments.action == "build":
-        response = platform.build()
+        response = platform.build(arguments.context)
     elif arguments.action == "publish":
         response = platform.publish()
     elif arguments.action == "plan":

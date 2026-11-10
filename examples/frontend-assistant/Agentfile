@@ -1,15 +1,15 @@
 # Build remote dependencies once. The final image contains only /agent.
 FROM node@sha256:752ea8a2f758c34002a0461bd9f1cee4f9a3c36d48494586f60ffce1fc708e0e AS content
 WORKDIR /agent
-COPY package.json package-lock.json ./
+COPY src/package.json src/package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 # Anthropic frontend-design, pinned to the complete upstream Skill directory (two files).
 ADD https://raw.githubusercontent.com/anthropics/skills/2c5958ecac7cee2b583967a2c4981d0f4a75c579/skills/frontend-design/SKILL.md ./.agents/skills/frontend-design/SKILL.md
 ADD https://raw.githubusercontent.com/anthropics/skills/2c5958ecac7cee2b583967a2c4981d0f4a75c579/skills/frontend-design/LICENSE.txt ./.agents/skills/frontend-design/LICENSE.txt
-COPY AGENTS.md ./
-COPY .agents/ ./.agents/
-COPY .codex/ ./.codex/
-COPY --chmod=755 bin/ ./node_modules/.bin/
+COPY src/AGENTS.md ./
+COPY src/.agents/ ./.agents/
+COPY src/.codex/ ./.codex/
+COPY --chmod=755 src/bin/ ./node_modules/.bin/
 RUN chmod -R a+rX .agents
 
 FROM scratch
