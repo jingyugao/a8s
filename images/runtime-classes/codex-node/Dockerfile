@@ -5,9 +5,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
     && rm -rf /var/lib/apt/lists/*
 COPY --from=node /usr/local/bin/node /usr/local/bin/node
 COPY --from=node /usr/local/lib/node_modules/npm/ /usr/local/lib/node_modules/npm/
-COPY dist/a8s dist/a8s-server dist/a8s-codex-agentc /usr/local/bin/
+COPY dist/a8s dist/a8s-server dist/a8s-codex-agentc dist/a8s-guest /usr/local/bin/
 COPY --chmod=755 scripts/agent-loader.sh /usr/local/bin/a8s-agent-loader
 COPY dist/codex/ /opt/a8s/codex/
+COPY LICENSE /usr/share/licenses/a8s/LICENSE
+COPY images/licenses/ /usr/share/licenses/a8s/third-party/
 RUN ln -s /opt/a8s/codex/bin/codex /usr/local/bin/codex \
     && ln -s /opt/a8s/codex/bin/codex-code-mode-host /usr/local/bin/codex-code-mode-host \
     && ln -s /opt/a8s/codex/bin/codex-exec-server /usr/local/bin/codex-exec-server \

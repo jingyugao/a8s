@@ -109,8 +109,25 @@ def publish_runtime(file, tag):
     if len(references) != 1:
         raise RuntimeError("无法确认 runtime class 的已发布镜像 digest")
     runtime["image"] = references[0]
-    write_json(file, runtime)
+    write_json(file.with_name("runtime-class.local.json"), {"image": runtime["image"]})
     return runtime
+
+
+def idle_reclaim_policy(value):
+    if not isinstance(value, dict) or set(value) - {"enabled", "idleTimeout", "checkInterval"}:
+        raise ValueError("idleReclaim 仅支持 enabled、idleTimeout、checkInterval")
+    policy = {"enabled": False, "idleTimeout": "10m", "checkInterval": "1m", **value}
+    if not isinstance(policy["enabled"], bool):
+        raise TypeError("idleReclaim.enabled 必须是布尔值")
+    for name in ("idleTimeout", "checkInterval"):
+        duration = policy[name]
+        if (
+            not isinstance(duration, str)
+            or not re.fullmatch(r"(?:[0-9]+(?:\.[0-9]+)?(?:ms|s|m|h))+", duration)
+            or not any(Decimal(number) > 0 for number in re.findall(r"[0-9]+(?:\.[0-9]+)?", duration))
+        ):
+            raise ValueError(f"idleReclaim.{name} 必须是正时长，例如 30s、1m、10m")
+    return policy
 
 
 class Platform:
@@ -126,6 +143,7 @@ class Platform:
             "env",
             "resources",
             "update",
+            "idleReclaim",
         }
         if not isinstance(self.agent, dict) or set(self.agent) - allowed:
             raise ValueError("AgentDeployment YAML 使用 a8s/v1，通过 runtimeClassRef 选择平台运行环境")
@@ -133,6 +151,7 @@ class Platform:
             raise ValueError("apiVersion 必须为 a8s/v1")
         if self.agent.get("kind") != "AgentDeployment":
             raise ValueError("kind 必须为 AgentDeployment")
+        self.idle_reclaim = idle_reclaim_policy(self.agent.get("idleReclaim", {}))
         self.name = self.agent.get("name", "")
         if not isinstance(self.name, str) or not re.fullmatch(r"[a-z][a-z0-9-]{0,39}", self.name):
             raise ValueError("name 使用小写字母开头，最多 40 个小写字母、数字或横线")
@@ -146,6 +165,12 @@ class Platform:
         if not class_file.is_file():
             raise ValueError(f"未知 runtime class：{class_name}")
         self.runtime_class = json.loads(class_file.read_text())
+        local_class_file = class_file.with_name("runtime-class.local.json")
+        if local_class_file.is_file():
+            local_class = json.loads(local_class_file.read_text())
+            if not isinstance(local_class, dict) or set(local_class) - {"image"}:
+                raise ValueError("runtime-class.local.json only accepts the published image reference")
+            self.runtime_class.update(local_class)
         self.base_image = self.runtime_class["image"]
         if self.runtime_class["name"] != class_name or self.runtime_class["harness"] != "codex":
             raise ValueError("runtime class 名称或 harness 不兼容")
@@ -197,10 +222,14 @@ class Platform:
             raise ValueError("CPU 和内存必须大于零")
         self.directory = manifest.resolve().parent
         self.config = {}
-        for line in (ROOT / "deploy/k3s/platform.env").read_text().splitlines():
-            if line.strip() and not line.lstrip().startswith("#"):
-                key, value = line.split("=", 1)
-                self.config[key] = os.environ.get(key, shlex.split(value)[0])
+        for config_file in (ROOT / "deploy/k3s/platform.env", ROOT / "deploy/k3s/platform.local.env"):
+            if not config_file.is_file():
+                continue
+            for line in config_file.read_text().splitlines():
+                if line.strip() and not line.lstrip().startswith("#"):
+                    key, value = line.split("=", 1)
+                    self.config[key] = shlex.split(value)[0]
+        self.config = {key: os.environ.get(key, value) for key, value in self.config.items()}
         self.ns = self.config["A8S_PLATFORM_NAMESPACE"]
         self.prefix = f"agent-{self.name}"
         self.scope = {
@@ -479,13 +508,13 @@ class Platform:
                 elif item["name"] == "A8S_AGENTC_URL":
                     item["value"] = f"http://{{instance}}.{self.ns}.svc:8094"
             launch = {
-                "command": ["/usr/local/bin/a8s-agent-loader", "--agentc"],
+                "command": ["/usr/local/bin/a8s-guest", "--listen=0.0.0.0:8094", "--root=" + self.working_dir],
                 "environment": {
                     "A8S_AGENT_IMAGE": self.image,
                     "A8S_AGENT_NAME": self.name,
                     "A8S_REGISTRY_PLAIN_HTTP": self.config["A8S_PLATFORM_REGISTRY_PLAIN_HTTP"],
                 },
-                "secretRefs": ["a8s-model"],
+                "secretRefs": ["a8s-server", "a8s-model"],
                 "configMap": f"{self.prefix}-host-config",
                 "controlPort": 8094,
             }
@@ -538,6 +567,7 @@ class Platform:
             "spec": {
                 "packageReference": self.package,
                 "runtimeRevisionId": self.component,
+                "idleReclaim": self.idle_reclaim,
             },
         }
         for name, value in [
@@ -601,7 +631,9 @@ class Platform:
             with self.connection():
                 current = self.api("deployment", "get", flags=["--id", self.name], missing=True)
                 if current:
-                    if current["deployment"]["spec"] != self.create["spec"]:
+                    current_spec = dict(current["deployment"]["spec"])
+                    current_spec["idleReclaim"] = idle_reclaim_policy(current_spec.get("idleReclaim", {}))
+                    if current_spec != self.create["spec"]:
                         raise RuntimeError("Agent 已存在且内容变化；当前安全更新尚未完成，原运行实例保持不变")
                     return current
         registry_flags = ["--plain-http"] if self.config["A8S_PLATFORM_REGISTRY_PLAIN_HTTP"] == "true" else []
@@ -752,5 +784,5 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (RuntimeError, ValueError, OSError, subprocess.SubprocessError) as error:
+    except (RuntimeError, ValueError, TypeError, OSError, subprocess.SubprocessError) as error:
         raise SystemExit(str(error)) from None

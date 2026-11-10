@@ -3,11 +3,11 @@ SHELL := /bin/bash
 
 # Go package roots. Listed explicitly so tmp/ is never built or tested.
 PKGS := ./api/... ./artifacts/... ./control/... ./execution/... ./agentc/... \
-	./providers/... ./storage/... ./infra/... ./sdk/... ./cmd/...
+	./providers/... ./storage/... ./infra/... ./sdk/... ./guest/... ./cmd/...
 
 .PHONY: build test vet fmt gen check codex-runtime binaries image image-publish
 
-IMAGE ?= 192.168.133.101:30500/a8s:dev
+IMAGE ?= registry.example.com/a8s:dev
 RUNTIME_CLASS ?= codex-node
 RUNTIME_CLASS_DIR := images/runtime-classes/$(RUNTIME_CLASS)
 
@@ -20,6 +20,7 @@ binaries:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o dist/a8s ./cmd/a8s
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o dist/a8s-server ./cmd/a8s-server
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o dist/a8s-codex-agentc ./agentc/codex/cmd/agentc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o dist/a8s-guest ./cmd/a8s-guest
 
 image: binaries codex-runtime
 	docker build --platform linux/amd64 -f $(RUNTIME_CLASS_DIR)/Dockerfile -t $(IMAGE) .

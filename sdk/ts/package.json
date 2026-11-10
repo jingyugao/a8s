@@ -1,0 +1,37 @@
+{
+  "name": "@a8s/sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js"
+    }
+  },
+  "scripts": {
+    "generate": "cd ../.. && buf generate --template sdk/ts/buf.gen.yaml",
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "2.17.0",
+    "@connectrpc/connect": "2.3.0",
+    "@connectrpc/connect-node": "2.3.0"
+  },
+  "devDependencies": {
+    "@bufbuild/protoc-gen-es": "2.17.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3"
+  },
+  "license": "MIT"
+}

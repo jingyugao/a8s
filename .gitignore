@@ -1,2 +1,19 @@
-/tmp/*
-!/tmp/docs/
+/bin/
+/dist/
+/node_modules/
+**/node_modules/
+**/__pycache__/
+*.py[cod]
+.ruff_cache/
+.env
+.env.*
+*.local.env
+/tmp/
+# Local validation deployments are not the portable installation path.
+/deploy/k3s/base/
+/deploy/k3s/native/
+/deploy/k3s/guest.yaml
+/deploy/k3s/kustomization.yaml
+
+# Operator-specific settings and published runtime digests.
+/images/runtime-classes/*/runtime-class.local.json

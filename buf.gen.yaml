@@ -1,0 +1,9 @@
+version: v2
+# Each contract declares its go_package explicitly. Local paths are not Buf module names.
+plugins:
+  - remote: buf.build/protocolbuffers/go:v1.36.11
+    out: .
+    opt: module=github.com/jingyugao/a8s
+  - remote: buf.build/connectrpc/go:v1.19.1
+    out: .
+    opt: module=github.com/jingyugao/a8s

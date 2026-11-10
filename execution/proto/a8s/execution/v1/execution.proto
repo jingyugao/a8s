@@ -1,0 +1,35 @@
+syntax = "proto3";
+package a8s.execution.v1;
+import "a8s/agentc/v1/agentc.proto";
+option go_package = "github.com/jingyugao/a8s/execution/gen/a8s/execution/v1;executionv1";
+
+message Resource { string scope = 1; string deployment_id = 2; string workspace_id = 3; string thread_id = 4; }
+message Record {
+  string request_id = 1;
+  string state = 2;
+  string thread_id = 3;
+  string turn_id = 4;
+}
+message OpenThreadRequest { Resource resource = 1; string request_key = 2; }
+message OpenThreadResponse { Record record = 1; }
+message SubmitInputRequest { Resource resource = 1; string request_key = 2; string text = 3; string author_id = 4; }
+message SubmitInputResponse { Record record = 1; }
+message GetInputResultRequest { Resource resource = 1; string request_id = 2; }
+message GetInputResultResponse { a8s.agentc.v1.InputResult result = 1; }
+message CancelRequest { Resource resource = 1; string request_key = 2; string input_request_id = 3; string turn_id = 4; }
+message CancelResponse { Record record = 1; }
+message RespondInteractionRequest { Resource resource = 1; string request_key = 2; string input_request_id = 3; string turn_id = 4; string interaction_id = 5; string decision = 6; }
+message RespondInteractionResponse { Record record = 1; }
+message SubscribeRequest { Resource resource = 1; string input_request_id = 2; }
+message SubscribeResponse { a8s.agentc.v1.SubscribeResponse event = 1; }
+message LookupRequest { Resource resource = 1; string kind = 2; string request_key = 3; }
+message LookupResponse { Record record = 1; }
+service ExecutionService {
+  rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
+  rpc SubmitInput(SubmitInputRequest) returns (SubmitInputResponse);
+  rpc GetInputResult(GetInputResultRequest) returns (GetInputResultResponse);
+  rpc Cancel(CancelRequest) returns (CancelResponse);
+  rpc RespondInteraction(RespondInteractionRequest) returns (RespondInteractionResponse);
+  rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse);
+  rpc Lookup(LookupRequest) returns (LookupResponse);
+}

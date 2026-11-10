@@ -1,0 +1,11 @@
+version: v2
+modules:
+  - path: api/proto
+  - path: agentc/contract/proto
+  - path: execution/proto
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE

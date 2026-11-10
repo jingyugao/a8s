@@ -174,6 +174,14 @@ func desiredPod(ref provider.ComputeReference) *core.Pod {
 				ReadinessProbe: &core.Probe{ProbeHandler: core.ProbeHandler{TCPSocket: &core.TCPSocketAction{Port: intstr.FromInt32(e.Port)}}, PeriodSeconds: 2}}}}}
 	if launch := e.Launch; launch != nil {
 		container := &pod.Spec.Containers[0]
+		if len(launch.Command) > 0 && launch.Command[0] == "/usr/local/bin/a8s-guest" {
+			root := int64(0)
+			container.SecurityContext = &core.SecurityContext{RunAsUser: &root, RunAsGroup: &root, AllowPrivilegeEscalation: &no,
+				Capabilities:   &core.Capabilities{Drop: []core.Capability{"ALL"}, Add: []core.Capability{"SETUID", "SETGID", "SETPCAP", "KILL", "CHOWN", "FOWNER", "DAC_OVERRIDE"}},
+				SeccompProfile: &core.SeccompProfile{Type: core.SeccompProfileTypeRuntimeDefault}}
+			container.StartupProbe = &core.Probe{ProbeHandler: core.ProbeHandler{HTTPGet: &core.HTTPGetAction{Path: "/readyz", Port: intstr.FromInt32(launch.ControlPort)}}, PeriodSeconds: 1, FailureThreshold: 180}
+			container.ReadinessProbe = &core.Probe{ProbeHandler: container.StartupProbe.ProbeHandler, PeriodSeconds: 1}
+		}
 		container.Command = launch.Command
 		keys := make([]string, 0, len(launch.Environment))
 		for key := range launch.Environment {
@@ -192,7 +200,9 @@ func desiredPod(ref provider.ComputeReference) *core.Pod {
 		}
 		if launch.ControlPort != 0 {
 			container.Ports = append(container.Ports, core.ContainerPort{Name: "agentc", ContainerPort: launch.ControlPort})
-			container.ReadinessProbe.TCPSocket.Port = intstr.FromInt32(launch.ControlPort)
+			if container.ReadinessProbe.TCPSocket != nil {
+				container.ReadinessProbe.TCPSocket.Port = intstr.FromInt32(launch.ControlPort)
+			}
 		}
 	}
 	return pod
@@ -207,7 +217,7 @@ func checkPod(ref provider.ComputeReference, pod *core.Pod) error {
 	}
 	c, expected := pod.Spec.Containers[0], want.Spec.Containers[0]
 	if c.Name != expected.Name || c.Image != expected.Image || !reflect.DeepEqual(c.Command, expected.Command) || !reflect.DeepEqual(c.Args, expected.Args) || !reflect.DeepEqual(c.Env, expected.Env) || !reflect.DeepEqual(c.EnvFrom, expected.EnvFrom) ||
-		!reflect.DeepEqual(c.VolumeMounts, expected.VolumeMounts) || !equalResources(c.Resources.Limits, expected.Resources.Limits) ||
+		!reflect.DeepEqual(c.SecurityContext, expected.SecurityContext) || !reflect.DeepEqual(c.VolumeMounts, expected.VolumeMounts) || !equalResources(c.Resources.Limits, expected.Resources.Limits) ||
 		!reflect.DeepEqual(pod.Spec.NodeSelector, want.Spec.NodeSelector) || !equalVolumes(pod.Spec.Volumes, want.Spec.Volumes) {
 		return fault(provider.Conflict, "PodSpecMismatch", "Pod image, resources, entrypoint or Workspace mount differs from the fixed intent")
 	}

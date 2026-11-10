@@ -1,0 +1,4 @@
+# Keep generated bindings recognizable and preserve upstream formatting.
+**/gen/** linguist-generated=true
+sdk/ts/src/gen/** -whitespace
+images/licenses/* linguist-vendored=true -whitespace

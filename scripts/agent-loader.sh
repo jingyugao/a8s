@@ -80,7 +80,7 @@ if [[ $mode == agentc ]]; then
   children+=("$!")
   /usr/local/bin/a8s-codex-agentc --listen=0.0.0.0:8094 --host=/usr/local/bin/codex \
     --runtime-dir="$state" --package-layout="$layout" \
-    --pass-env=PATH,HOME,LANG,TZ,AGENT_ROOT,COLONY_MODEL_API_KEY &
+    --pass-env=PATH,HOME,LANG,TZ,AGENT_ROOT,OPENAI_API_KEY,COLONY_MODEL_API_KEY &
   children+=("$!")
   set +e
   wait -n "${children[@]}"

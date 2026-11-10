@@ -34,15 +34,8 @@ func validEndpoint(raw string) bool {
 
 func (a *agentAdapter) remote(instanceID string) *transport.Client {
 	endpoint := strings.ReplaceAll(a.url, "{instance}", strings.ToLower(instanceID))
-	interceptor := connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
-		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-			if a.token != "" {
-				req.Header().Set("Authorization", "Bearer "+a.token)
-			}
-			return next(ctx, req)
-		}
-	})
-	return transport.NewClient(a.client, endpoint, 15*time.Second, connect.WithInterceptors(interceptor))
+	return transport.NewClient(a.client, endpoint, 15*time.Second)
+
 }
 
 func binding(action control.Action) *av1.Binding {
@@ -179,5 +172,20 @@ func newAgentAdapter(endpoint, token, execURL, directory string) (*agentAdapter,
 	if !validEndpoint(strings.ReplaceAll(endpoint, "{instance}", "instance")) || directory == "" {
 		return nil, api.NewError(v1.ErrorCategory_ERROR_CATEGORY_INVALID, "Agentc URL and Workspace directory are required")
 	}
-	return &agentAdapter{url: endpoint, token: token, execURL: execURL, workspaceDirectory: directory, client: &http.Client{Timeout: 15 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}, nil
+	return &agentAdapter{url: endpoint, token: token, execURL: execURL, workspaceDirectory: directory, client: &http.Client{Transport: agentTokenTransport{base: http.DefaultTransport, token: token}, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}, nil
+}
+
+// HTTP authorization applies to unary and streaming RPCs alike. Unary deadlines
+// are owned by transport.Client; subscriptions have the handler's stream limit.
+type agentTokenTransport struct {
+	base  http.RoundTripper
+	token string
+}
+
+func (t agentTokenTransport) RoundTrip(request *http.Request) (*http.Response, error) {
+	copy := request.Clone(request.Context())
+	if t.token != "" {
+		copy.Header.Set("Authorization", "Bearer "+t.token)
+	}
+	return t.base.RoundTrip(copy)
 }

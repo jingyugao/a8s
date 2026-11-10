@@ -1,9 +1,17 @@
 *
+!LICENSE
 !dist/
+dist/*
 !dist/a8s
 !dist/a8s-server
 !dist/a8s-codex-agentc
+!dist/a8s-guest
 !dist/codex/
 !dist/codex/**
 !scripts/
+scripts/*
 !scripts/agent-loader.sh
+!images/
+images/*
+!images/licenses/
+!images/licenses/**

@@ -4,5 +4,5 @@
   "platform": "linux/amd64",
   "codexVersion": "0.166.0",
   "nodeVersion": "22.18.0",
-  "image": "192.168.133.101:30500/a8s@sha256:dcd79bbbd3ccab5773232e09dde47b42f71196a7bd519aac8fa8d4f3bb81a9b4"
+  "image": ""
 }

@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package a8s.agentc.v1;
+
+option go_package = "github.com/jingyugao/a8s/agentc/contract/gen/a8s/agentc/v1;agentcv1";
+
+// Scope is an opaque authorized resource scope, interpreted by the application.
+message Binding {
+  string scope = 1;
+  string deployment_id = 2;
+  string workspace_id = 3;
+  string instance_id = 4;
+  string release_id = 5;
+  uint64 epoch = 6;
+}
+
+message PrepareRequest {
+  Binding binding = 1;
+  string package_digest = 2;
+  string host_digest = 3;
+  string exec_server_url = 4;
+  string workspace_directory = 5;
+}
+message PrepareResponse { Ready ready = 1; }
+message Ready {
+  Binding binding = 1;
+  bool ready = 2;
+  string package_digest = 3;
+  string host_digest = 4;
+  // Values are supported, unsupported, or unverified. Unknown is never support.
+  map<string, string> capabilities = 5;
+  bool admission_open = 6;
+}
+message InspectRequest { Binding binding = 1; }
+message InspectResponse { Ready ready = 1; }
+message SetAdmissionRequest { Binding binding = 1; bool open = 2; }
+message SetAdmissionResponse { Ready ready = 1; }
+message DrainRequest { Binding binding = 1; }
+message DrainResponse {
+  bool admission_closed = 1;
+  uint32 active_turns = 2;
+  uint32 queued_inputs = 3;
+  uint32 waiting_interactions = 4;
+  bool tools_observed = 5;
+  uint32 running_tools = 6;
+  bool native_state_persisted = 7;
+  bool drained = 8;
+  string reason = 9;
+}
+message StopRequest { Binding binding = 1; }
+message StopResponse {
+  bool process_stopped = 1;
+  bool native_state_persisted = 2;
+  string scope = 3;
+}
+message OpenThreadRequest { Binding binding = 1; string request_id = 2; }
+message OpenThreadResponse { string thread_id = 1; }
+message SubmitInputRequest {
+  Binding binding = 1;
+  string request_id = 2;
+  string thread_id = 3;
+  string text = 4;
+  string author_id = 5;
+}
+message SubmitInputResponse { InputResult result = 1; }
+message GetInputResultRequest {
+  Binding binding = 1;
+  string request_id = 2;
+  string thread_id = 3;
+  string turn_id = 4;
+}
+message GetInputResultResponse { InputResult result = 1; }
+message InputResult {
+  string request_id = 1;
+  string thread_id = 2;
+  string turn_id = 3;
+  string native_receipt = 4;
+  // Accepted, Running, Succeeded, Failed, Cancelled, Rejected, OutcomeUnknown.
+  string state = 5;
+  string output_text = 6;
+}
+message CancelRequest {
+  Binding binding = 1;
+  string request_id = 2;
+  string thread_id = 3;
+  string turn_id = 4;
+}
+message CancelResponse { bool accepted = 1; bool stopped = 2; }
+message RespondInteractionRequest {
+  Binding binding = 1;
+  string request_id = 2;
+  string thread_id = 3;
+  string turn_id = 4;
+  string interaction_id = 5;
+  // Only typed approval decisions are supported initially: accept or decline.
+  string decision = 6;
+}
+message RespondInteractionResponse { bool accepted = 1; }
+message SubscribeRequest { Binding binding = 1; string thread_id = 2; }
+message SubscribeResponse {
+  string event_id = 1;
+  string thread_id = 2;
+  string turn_id = 3;
+  string type = 4;
+  string text = 5;
+  string interaction_id = 6;
+  // Native method name only; tool arguments and credentials are never forwarded.
+  string interaction_kind = 7;
+}
+
+service AgentcService {
+  rpc Prepare(PrepareRequest) returns (PrepareResponse);
+  rpc Inspect(InspectRequest) returns (InspectResponse);
+  rpc SetAdmission(SetAdmissionRequest) returns (SetAdmissionResponse);
+  rpc Drain(DrainRequest) returns (DrainResponse);
+  rpc Stop(StopRequest) returns (StopResponse);
+  rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
+  rpc SubmitInput(SubmitInputRequest) returns (SubmitInputResponse);
+  rpc GetInputResult(GetInputResultRequest) returns (GetInputResultResponse);
+  rpc Cancel(CancelRequest) returns (CancelResponse);
+  rpc RespondInteraction(RespondInteractionRequest) returns (RespondInteractionResponse);
+  rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse);
+}

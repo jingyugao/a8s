@@ -17,6 +17,7 @@ import (
 	"github.com/jingyugao/a8s/control/resources"
 	provider "github.com/jingyugao/a8s/providers/contract"
 	native "github.com/jingyugao/a8s/providers/kubernetes"
+	"google.golang.org/protobuf/encoding/protojson"
 	typed "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -56,9 +57,25 @@ func (e *environmentAdapter) Plan(ctx context.Context, action control.Action) (s
 		if launch.Environment == nil {
 			launch.Environment = map[string]string{}
 		}
+		if action.Release.Spec.GetIdleReclaim().GetEnabled() && (len(launch.Command) == 0 || launch.Command[0] != "/usr/local/bin/a8s-guest") {
+			return "", api.NewError(v1.ErrorCategory_ERROR_CATEGORY_UNSUPPORTED, "idle reclaim requires the platform Guest runtime")
+		}
+		policy := action.Release.Spec.GetIdleReclaim()
+		if policy == nil {
+			policy = &v1.IdleReclaimPolicy{}
+		}
+		policyJSON, err := protojson.Marshal(policy)
+		if err != nil {
+			return "", err
+		}
+		launch.Environment["A8S_IDLE_RECLAIM"] = string(policyJSON)
+		launch.Environment["A8S_GUEST_SLOT"] = strings.ToLower(action.Instance.Id)
 		launch.Environment["A8S_PACKAGE_DIGEST"] = action.Release.Package.Digest
 		launch.Environment["A8S_NATIVE_STATE"] = e.mountPath + "/.a8s/" + action.Instance.Id
 		request.Launch = launch
+	}
+	if action.Release.Spec.GetIdleReclaim().GetEnabled() && request.Launch == nil {
+		return "", api.NewError(v1.ErrorCategory_ERROR_CATEGORY_UNSUPPORTED, "idle reclaim requires the platform Guest runtime")
 	}
 	if sandbox.Architecture != "" {
 		request.Platform = "linux/" + sandbox.Architecture

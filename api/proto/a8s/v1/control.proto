@@ -1,0 +1,288 @@
+syntax = "proto3";
+
+package a8s.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/jingyugao/a8s/api/gen/a8s/v1;a8sv1";
+
+message Scope {
+  string tenant_id = 1;
+  string project_id = 2;
+}
+
+enum ErrorCategory {
+  ERROR_CATEGORY_UNSPECIFIED = 0;
+  ERROR_CATEGORY_INVALID = 1;
+  ERROR_CATEGORY_INCOMPATIBLE = 2;
+  ERROR_CATEGORY_FORBIDDEN = 3;
+  ERROR_CATEGORY_NOT_FOUND = 4;
+  ERROR_CATEGORY_CONFLICT = 5;
+  ERROR_CATEGORY_NOT_READY = 6;
+  ERROR_CATEGORY_ADMISSION_CLOSED = 7;
+  ERROR_CATEGORY_UNSUPPORTED = 8;
+  ERROR_CATEGORY_DEPENDENCY_UNAVAILABLE = 9;
+  ERROR_CATEGORY_OUTCOME_UNKNOWN = 10;
+  ERROR_CATEGORY_CURSOR_EXPIRED = 11;
+}
+
+// Messages must be safe for persistence: no secret values or raw remote bodies.
+message ErrorDetail {
+  ErrorCategory category = 1;
+  string message = 2;
+  string source = 3;
+  string code = 4;
+  string operation_id = 5;
+  uint64 current_version = 6;
+}
+
+message Artifact {
+  string reference = 1;
+  string digest = 2;
+}
+
+message CredentialReference {
+  string name = 1;
+  string version = 2;
+}
+
+message AgentcRegistration {
+  Scope scope = 1;
+  string id = 2;
+  Artifact artifact = 3;
+  string protocol_version = 4;
+  repeated string capabilities = 5;
+  bool persistent_history = 6;
+  string native_state_version = 7;
+  uint64 resource_version = 8;
+  // Executable bytes checked by Agentc; distinct from an OCI manifest digest.
+  string host_digest = 9;
+}
+
+message SandboxSpec {
+  string provider = 1;
+  Artifact image = 2;
+  string environment_revision = 3;
+  string architecture = 4;
+  map<string, string> resources = 5;
+}
+
+message RuntimeRevision {
+  Scope scope = 1;
+  string id = 2;
+  string agentc_id = 3;
+  SandboxSpec sandbox = 4;
+  uint64 resource_version = 5;
+}
+
+enum DesiredState {
+  DESIRED_STATE_UNSPECIFIED = 0;
+  DESIRED_STATE_ONLINE = 1;
+  DESIRED_STATE_OFFLINE = 2;
+}
+
+message IdleReclaimPolicy {
+  bool enabled = 1;
+  string idle_timeout = 2;
+  string check_interval = 3;
+}
+
+message DeploymentSpec {
+  string package_reference = 1;
+  string runtime_revision_id = 2;
+  repeated CredentialReference credentials = 3;
+  IdleReclaimPolicy idle_reclaim = 4;
+}
+
+message Deployment {
+  Scope scope = 1;
+  string id = 2;
+  string workspace_id = 3;
+  DeploymentSpec spec = 4;
+  DesiredState desired_state = 5;
+  uint64 resource_version = 6;
+  uint64 generation = 7;
+  uint64 observed_generation = 8;
+  string active_release_id = 9;
+  string active_instance_id = 10;
+  string operation_id = 11;
+  ErrorDetail condition = 12;
+}
+
+message Workspace {
+  Scope scope = 1;
+  string id = 2;
+  string deployment_id = 3;
+  string storage_reference = 4;
+  bool retained = 5;
+}
+
+message Release {
+  Scope scope = 1;
+  string id = 2;
+  string deployment_id = 3;
+  uint64 generation = 4;
+  DeploymentSpec spec = 5;
+  Artifact package = 6;
+  AgentcRegistration agentc = 7;
+  RuntimeRevision runtime = 8;
+  repeated string required_capabilities = 9;
+  string rollback_source_id = 10;
+  google.protobuf.Timestamp created_at = 11;
+}
+
+enum OperationStatus {
+  OPERATION_STATUS_UNSPECIFIED = 0;
+  OPERATION_STATUS_PENDING = 1;
+  OPERATION_STATUS_RUNNING = 2;
+  OPERATION_STATUS_SUCCEEDED = 3;
+  OPERATION_STATUS_FAILED = 4;
+  OPERATION_STATUS_UNKNOWN = 5;
+  OPERATION_STATUS_BLOCKED = 6;
+}
+
+enum OperationPhase {
+  OPERATION_PHASE_UNSPECIFIED = 0;
+  OPERATION_PHASE_RESOLVING = 1;
+  OPERATION_PHASE_PREPARING = 2;
+  OPERATION_PHASE_CLOSING_ADMISSION = 3;
+  OPERATION_PHASE_DRAINING = 4;
+  OPERATION_PHASE_RELEASING_WRITER = 5;
+  OPERATION_PHASE_STARTING = 6;
+  OPERATION_PHASE_COMMITTING = 7;
+  OPERATION_PHASE_CLEANING = 8;
+  OPERATION_PHASE_COMPLETED = 9;
+}
+
+message ExternalOperation {
+  string step = 1;
+  string request_key = 2;
+  string operation_id = 3;
+  bool dispatched = 4;
+  bool completed = 5;
+  ErrorDetail error = 6;
+}
+
+message Operation {
+  Scope scope = 1;
+  string id = 2;
+  string deployment_id = 3;
+  string kind = 4;
+  string request_key = 5;
+  uint64 generation = 6;
+  string release_id = 7;
+  OperationStatus status = 8;
+  OperationPhase phase = 9;
+  repeated ExternalOperation external_operations = 10;
+  ErrorDetail error = 11;
+  bool published = 12;
+  bool cleanup_pending = 13;
+  google.protobuf.Timestamp created_at = 14;
+  google.protobuf.Timestamp updated_at = 15;
+}
+
+message Instance {
+  string id = 1;
+  string release_id = 2;
+  string compute_reference = 3;
+  string agentc_binding = 4;
+  uint64 epoch = 5;
+  string package_digest = 6;
+  string agentc_digest = 7;
+  string sandbox_digest = 8;
+  bool ready = 9;
+  bool writer_released = 10;
+  google.protobuf.Timestamp observed_at = 11;
+  repeated string capabilities = 12;
+}
+
+message ExecutionTarget {
+  Scope scope = 1;
+  string deployment_id = 2;
+  string workspace_id = 3;
+  string instance_id = 4;
+  string agentc_binding = 5;
+  uint64 epoch = 6;
+  bool admission_open = 7;
+  uint64 view_version = 8;
+  repeated string capabilities = 9;
+  string operation_id = 10;
+  ErrorDetail condition = 11;
+}
+
+message RegisterAgentcRequest { AgentcRegistration agentc = 1; }
+message RegisterAgentcResponse { AgentcRegistration agentc = 1; }
+message GetAgentcRequest { Scope scope = 1; string id = 2; }
+message GetAgentcResponse { AgentcRegistration agentc = 1; }
+message CreateRuntimeRevisionRequest { RuntimeRevision runtime_revision = 1; }
+message CreateRuntimeRevisionResponse { RuntimeRevision runtime_revision = 1; }
+message GetRuntimeRevisionRequest { Scope scope = 1; string id = 2; }
+message GetRuntimeRevisionResponse { RuntimeRevision runtime_revision = 1; }
+message CreateDeploymentRequest {
+  Scope scope = 1;
+  string id = 2;
+  DeploymentSpec spec = 3;
+  string request_key = 4;
+  string workspace_id = 5;
+  string storage_reference = 6;
+}
+message CreateDeploymentResponse { Deployment deployment = 1; Operation operation = 2; }
+message GetDeploymentRequest { Scope scope = 1; string id = 2; }
+message GetDeploymentResponse { Deployment deployment = 1; }
+message ListDeploymentsRequest { Scope scope = 1; uint32 page_size = 2; string page_token = 3; }
+message ListDeploymentsResponse { repeated Deployment deployments = 1; string next_page_token = 2; }
+message UpdateDeploymentRequest {
+  Scope scope = 1;
+  string id = 2;
+  DeploymentSpec spec = 3;
+  string request_key = 4;
+  uint64 expected_resource_version = 5;
+}
+message UpdateDeploymentResponse { Deployment deployment = 1; Operation operation = 2; }
+message SetDesiredStateRequest {
+  Scope scope = 1;
+  string id = 2;
+  DesiredState desired_state = 3;
+  string request_key = 4;
+  uint64 expected_resource_version = 5;
+}
+message SetDesiredStateResponse { Deployment deployment = 1; Operation operation = 2; }
+message RollbackRequest {
+  Scope scope = 1;
+  string id = 2;
+  string release_id = 3;
+  string request_key = 4;
+  uint64 expected_resource_version = 5;
+}
+message RollbackResponse { Deployment deployment = 1; Operation operation = 2; }
+message GetWorkspaceRequest { Scope scope = 1; string deployment_id = 2; string id = 3; }
+message GetWorkspaceResponse { Workspace workspace = 1; }
+message GetReleaseRequest { Scope scope = 1; string deployment_id = 2; string id = 3; }
+message GetReleaseResponse { Release release = 1; }
+message GetOperationRequest { Scope scope = 1; string deployment_id = 2; string id = 3; }
+message GetOperationResponse { Operation operation = 1; }
+message ReadExecutionTargetRequest { Scope scope = 1; string deployment_id = 2; string workspace_id = 3; }
+message ReadExecutionTargetResponse { ExecutionTarget target = 1; }
+message RequestWakeRequest { Scope scope = 1; string deployment_id = 2; string request_key = 3; }
+message RequestWakeResponse { Operation operation = 1; }
+message DeleteWorkspaceRequest { Scope scope = 1; string deployment_id = 2; string id = 3; string request_key = 4; }
+message DeleteWorkspaceResponse { Operation operation = 1; }
+
+service ControlService {
+  rpc RegisterAgentc(RegisterAgentcRequest) returns (RegisterAgentcResponse);
+  rpc GetAgentc(GetAgentcRequest) returns (GetAgentcResponse);
+  rpc CreateRuntimeRevision(CreateRuntimeRevisionRequest) returns (CreateRuntimeRevisionResponse);
+  rpc GetRuntimeRevision(GetRuntimeRevisionRequest) returns (GetRuntimeRevisionResponse);
+  rpc CreateDeployment(CreateDeploymentRequest) returns (CreateDeploymentResponse);
+  rpc GetDeployment(GetDeploymentRequest) returns (GetDeploymentResponse);
+  rpc ListDeployments(ListDeploymentsRequest) returns (ListDeploymentsResponse);
+  rpc UpdateDeployment(UpdateDeploymentRequest) returns (UpdateDeploymentResponse);
+  rpc SetDesiredState(SetDesiredStateRequest) returns (SetDesiredStateResponse);
+  rpc Rollback(RollbackRequest) returns (RollbackResponse);
+  rpc GetWorkspace(GetWorkspaceRequest) returns (GetWorkspaceResponse);
+  rpc GetRelease(GetReleaseRequest) returns (GetReleaseResponse);
+  rpc GetOperation(GetOperationRequest) returns (GetOperationResponse);
+  rpc ReadExecutionTarget(ReadExecutionTargetRequest) returns (ReadExecutionTargetResponse);
+  rpc RequestWake(RequestWakeRequest) returns (RequestWakeResponse);
+  rpc DeleteWorkspace(DeleteWorkspaceRequest) returns (DeleteWorkspaceResponse);
+}
