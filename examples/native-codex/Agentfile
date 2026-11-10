@@ -1,0 +1,17 @@
+# Standard Dockerfile syntax; Dockerfile supplies the runtime build layer.
+ARG BUILD_IMAGE
+FROM ${BUILD_IMAGE} AS package-build
+ARG AGENT_NAME
+WORKDIR /agent
+COPY AGENTS.md ./
+COPY .agents/ ./.agents/
+COPY .codex/ ./.codex/
+COPY --chmod=755 bin/ ./node_modules/.bin/
+RUN a8s --json package init --source /agent --name "${AGENT_NAME}" \
+    && a8s --json package build --source /agent --output /opt/a8s/package
+
+FROM ${BUILD_IMAGE}
+COPY --from=package-build /agent/ /agent/
+COPY --from=package-build /opt/a8s/package/ /opt/a8s/package/
+ENV AGENT_ROOT=/agent PATH=/agent/node_modules/.bin:${PATH}
+WORKDIR /runtime

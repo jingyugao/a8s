@@ -1,0 +1,6 @@
+# Native Codex MCP configuration. Model and credentials are supplied by the platform.
+[mcp_servers.example]
+command = "node"
+args = ["/agent/node_modules/.bin/agent-tools", "--mcp"]
+startup_timeout_sec = 10
+tool_timeout_sec = 10

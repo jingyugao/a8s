@@ -1,0 +1,7 @@
+*
+!dist/
+!dist/a8s
+!dist/a8s-server
+!dist/a8s-codex-agentc
+!dist/codex/
+!dist/codex/**

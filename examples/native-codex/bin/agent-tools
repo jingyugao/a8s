@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+// The same read-only example is available as a CLI and an MCP stdio tool.
+import { createInterface } from 'node:readline';
+
+const info = () => ({ node: process.version, cwd: process.cwd(), agentRoot: '/agent' });
+if (!process.argv.includes('--mcp')) {
+  console.log(JSON.stringify(info()));
+} else {
+  const input = createInterface({ input: process.stdin, crlfDelay: Infinity });
+  for await (const line of input) {
+    let request;
+    try { request = JSON.parse(line); } catch {
+      console.log(JSON.stringify({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } }));
+      continue;
+    }
+    if (!Object.hasOwn(request, 'id')) continue;
+    let result;
+    switch (request.method) {
+      case 'initialize':
+        result = { protocolVersion: '2024-11-05', capabilities: { tools: {} },
+          serverInfo: { name: 'a8s-example', version: '1.0.0' } };
+        break;
+      case 'ping': result = {}; break;
+      case 'tools/list':
+        result = { tools: [{ name: 'agent_info', description: 'Read Node version and current directory.',
+          inputSchema: { type: 'object', properties: {}, additionalProperties: false } }] };
+        break;
+      case 'tools/call':
+        if (request.params?.name === 'agent_info') {
+          result = { content: [{ type: 'text', text: JSON.stringify(info()) }] };
+        }
+        break;
+    }
+    console.log(JSON.stringify(result === undefined
+      ? { jsonrpc: '2.0', id: request.id, error: { code: -32601, message: 'Unknown method or tool' } }
+      : { jsonrpc: '2.0', id: request.id, result }));
+  }
+}

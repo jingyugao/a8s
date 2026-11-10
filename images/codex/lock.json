@@ -1,0 +1,14 @@
+{
+  "version": "0.166.0",
+  "platform": "linux/amd64",
+  "source": "https://github.com/openai/codex/releases/tag/rust-v0.166.0",
+  "archive": {
+    "url": "https://github.com/openai/codex/releases/download/rust-v0.166.0/codex-package-x86_64-unknown-linux-musl.tar.gz",
+    "sha256": "1d44b28bc4ac9937d7d3532264baa68a507ce364956a0d4ebb856f331cdee254"
+  },
+  "binaries": {
+    "codex": "b8a11fedf24b2dfb59a70c9e52b030f9a508dcd49cd2dd0d41956f4c785156b8",
+    "codex-code-mode-host": "657f4e902726e05867c937b583049d5997e057f8cd0ab40450633c9c9ef8d630",
+    "codex-exec-server": "79e4b41b564bc3190146389ecc95d6c05ba2a20d6503e025e5fcafb47db05849"
+  }
+}
