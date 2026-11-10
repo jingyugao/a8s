@@ -1,5 +1,5 @@
 {
-  "name": "a8s-native-codex-example",
+  "name": "a8s-frontend-assistant",
   "private": true,
   "dependencies": {
     "prettier": "3.9.10"
