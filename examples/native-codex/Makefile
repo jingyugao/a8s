@@ -1,5 +1,5 @@
 # Agentfile assembles AGENTS.md, Skills, CLI and native MCP configuration.
-# Dockerfile supplies runtime dependencies; agent.yaml registers the agent.
+# agent.yaml selects the platform-owned runtime class and registers the agent.
 # The platform owns Codex, database/model configuration, storage and Kubernetes templates.
 SHELL := /bin/bash
 .SHELLFLAGS := -eo pipefail -c
@@ -12,7 +12,7 @@ MANAGE := bash $(ROOT)/scripts/agent.sh
 
 help:
 	@printf '%s\n' \
-	  'make build    构建 Agent 镜像；Codex 继承自平台内置镜像' \
+	  'make build    只构建 Agentfile；Codex + Node 由平台 runtime class 提供' \
 	  'make publish  构建并发布镜像与 Agent 包，登记时固定 digest' \
 	  'make create   发布并创建 Agent；相同内容可重复核对' \
 	  'make plan     查看已发布镜像的创建计划，不修改集群' \

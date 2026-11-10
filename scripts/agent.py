@@ -2,7 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["PyYAML==6.0.3"]
 # ///
-"""Platform-side build and deployment commands for Agentfile, Dockerfile and agent.yaml."""
+"""Build Agentfiles against platform-owned runtime classes and manage agents."""
 
 import argparse
 import base64
@@ -50,6 +50,68 @@ def write_json(file, value, *, immutable=False):
     file.write_text(content)
 
 
+def verify_runtime(image, runtime):
+    """Verify the platform-owned harness bytes and Node version, without network access."""
+    lock = json.loads((ROOT / "images/codex/lock.json").read_text())
+    if runtime["harness"] != "codex" or runtime["codexVersion"] != lock["version"]:
+        raise ValueError("runtime class 必须使用平台固定版本的原版 Codex")
+    hashes = run(
+        [
+            "docker",
+            "run",
+            "--rm",
+            "--network=none",
+            "--entrypoint",
+            "sha256sum",
+            image,
+            *[f"/usr/local/bin/{name}" for name in lock["binaries"]],
+        ],
+        timeout=30,
+    )
+    actual = {Path(line.split()[1]).name: line.split()[0] for line in hashes.splitlines()}
+    if actual != lock["binaries"]:
+        raise RuntimeError("镜像覆盖了平台固定的原版 Codex 二进制")
+    version = run(
+        ["docker", "run", "--rm", "--network=none", "--entrypoint", "node", image, "--version"], timeout=30
+    ).strip()
+    if version != "v" + runtime["nodeVersion"] or int(version[1:].split(".")[0]) < 22:
+        raise RuntimeError("镜像中的 Node 版本与 runtime class 不一致")
+
+
+def publish_runtime(file, tag):
+    if not tag or not tag.endswith(":dev"):
+        raise ValueError("平台源码构建统一使用 :dev 标签")
+    runtime = json.loads(file.read_text())
+    # Verify the immutable image before publishing the repository's development tag.
+    image_id = run(["docker", "image", "inspect", tag, "--format", "{{.Id}}"]).strip()
+    verify_runtime(image_id, runtime)
+    run(
+        [
+            "docker",
+            "run",
+            "--rm",
+            "--network=none",
+            "--entrypoint",
+            "sh",
+            image_id,
+            "-c",
+            "test ! -e /agent && test ! -e /opt/a8s/package && npm --version && npx --version",
+        ],
+        timeout=30,
+    )
+    if run(["docker", "image", "inspect", tag, "--format", "{{.Id}}"]).strip() != image_id:
+        raise RuntimeError("开发镜像已被其他构建覆盖，请重新构建 runtime class")
+    subprocess.run(["docker", "push", tag], check=True, timeout=300)
+    repository = tag.rsplit(":", 1)[0]
+    inspected = json.loads(run(["docker", "image", "inspect", image_id]))[0]
+    references = [ref for ref in inspected["RepoDigests"] if ref.startswith(repository + "@sha256:")]
+    if len(references) != 1:
+        raise RuntimeError("无法确认 runtime class 的已发布镜像 digest")
+    runtime["image"] = references[0]
+    write_json(file, runtime)
+    return runtime
+
+
 class Platform:
     def __init__(self, manifest):
         self.agent = yaml.safe_load(manifest.read_text())
@@ -57,27 +119,37 @@ class Platform:
             "apiVersion",
             "name",
             "agentImage",
-            "sandboxImage",
-            "harness",
+            "runtimeClassRef",
             "workingDir",
             "env",
             "resources",
             "update",
         }
         if not isinstance(self.agent, dict) or set(self.agent) - allowed:
-            raise ValueError("Agent YAML 必须使用已有的 agentfile/v1 字段")
-        if self.agent.get("apiVersion") != "agentfile/v1":
-            raise ValueError("apiVersion 必须为 agentfile/v1")
+            raise ValueError("Agent YAML 使用 a8s/v1，通过 runtimeClassRef 选择平台运行环境")
+        if self.agent.get("apiVersion") != "a8s/v1":
+            raise ValueError("apiVersion 必须为 a8s/v1")
         self.name = self.agent.get("name", "")
         if not isinstance(self.name, str) or not re.fullmatch(r"[a-z][a-z0-9-]{0,39}", self.name):
             raise ValueError("name 使用小写字母开头，最多 40 个小写字母、数字或横线")
-        if self.agent.get("harness") != "codex":
-            raise ValueError("当前内置 harness 仅支持原版 codex")
-        for key in ("agentImage", "sandboxImage"):
-            if not isinstance(self.agent.get(key), str) or not self.agent[key].strip():
-                raise ValueError(f"{key} 必须是镜像引用")
-        if self.agent["agentImage"] != self.agent["sandboxImage"]:
-            raise ValueError("当前组装尚不支持双镜像装载；agentImage 与 sandboxImage 请使用同一构建结果")
+        if not isinstance(self.agent.get("agentImage"), str) or not self.agent["agentImage"].strip():
+            raise ValueError("agentImage 必须是 Agent 镜像引用")
+        ref = self.agent.get("runtimeClassRef", "")
+        if not isinstance(ref, str) or not re.fullmatch(r"[a-z][a-z0-9-]*(?:@sha256:[a-f0-9]{64})?", ref):
+            raise ValueError("runtimeClassRef 必须是平台内置 runtime class 名称，可附加 @sha256 revision")
+        class_name, _, revision = ref.partition("@")
+        class_file = ROOT / "images/runtime-classes" / class_name / "runtime-class.json"
+        if not class_file.is_file():
+            raise ValueError(f"未知 runtime class：{class_name}")
+        self.runtime_class = json.loads(class_file.read_text())
+        self.base_image = self.runtime_class["image"]
+        if self.runtime_class["name"] != class_name or self.runtime_class["harness"] != "codex":
+            raise ValueError("runtime class 名称或 harness 不兼容")
+        if not re.search(r"@sha256:[a-f0-9]{64}$", self.base_image):
+            raise ValueError("runtime class 尚未发布固定 digest 的平台镜像")
+        if revision and revision != self.base_image.split("@")[1]:
+            raise ValueError("指定的 runtime class revision 与平台目录不一致")
+        self.runtime_class_ref = class_name + "@" + self.base_image.split("@")[1]
         if self.agent.get("env", {}) != {}:
             raise ValueError("当前 Provider 尚不支持声明级 env；非秘密默认值请使用 Agentfile ENV")
         if self.agent.get("update", {"strategy": "restart"}) != {"strategy": "restart"}:
@@ -135,9 +207,6 @@ class Platform:
         self.state = ROOT / "tmp/agents" / self.name
         self.state.mkdir(parents=True, exist_ok=True)
         self.lock = json.loads((ROOT / "images/codex/lock.json").read_text())
-        self.base_image = self.config["A8S_PLATFORM_IMAGE"]
-        if not re.search(r"@sha256:[a-f0-9]{64}$", self.base_image):
-            raise ValueError("平台镜像必须固定到 @sha256 digest")
         self.cli = Path(os.environ.get("A8S_PLATFORM_CLI", ROOT / "dist/a8s"))
         self.env = os.environ.copy()
         self.endpoint = None
@@ -186,30 +255,30 @@ class Platform:
                 self.cli.chmod(0o755)
 
     def build(self):
-        if not (self.directory / "Agentfile").is_file() or not (self.directory / "Dockerfile").is_file():
-            raise ValueError("Agent 目录必须包含 Agentfile 和 Dockerfile")
+        if not (self.directory / "Agentfile").is_file():
+            raise ValueError("Agent 目录必须包含 Agentfile；Dockerfile 由平台 runtime class 维护")
         tag = self.agent["agentImage"]
         if not tag.endswith(":dev"):
             raise ValueError("本地源码构建统一使用 :dev 标签；发布时解析固定 digest")
-        print(f"构建 {tag}，Codex 来自平台镜像 {self.base_image}", flush=True)
-        # Reuse this repository's single development tag for the runtime layer and final image.
-        for file, build_args in [
-            ("Dockerfile", [f"PLATFORM_IMAGE={self.base_image}"]),
-            ("Agentfile", [f"BUILD_IMAGE={tag}", f"AGENT_NAME={self.name}"]),
-        ]:
-            argv = [
-                "docker",
-                "build",
-                "--platform",
-                "linux/amd64",
-                "-f",
-                str(self.directory / file),
-                "-t",
-                tag,
-            ]
-            for value in build_args:
-                argv += ["--build-arg", value]
-            subprocess.run([*argv, str(self.directory)], check=True, timeout=900)
+        print(f"构建 {tag}，继承平台 runtime class {self.runtime_class_ref}", flush=True)
+        argv = [
+            "docker",
+            "build",
+            "--platform",
+            self.runtime_class["platform"],
+            "--build-arg",
+            f"RUNTIME_IMAGE={self.base_image}",
+            "--build-arg",
+            f"AGENT_NAME={self.name}",
+            "--label",
+            f"a8s.io.runtime-class-ref={self.runtime_class_ref}",
+            "-f",
+            str(self.directory / "Agentfile"),
+            "-t",
+            tag,
+            str(self.directory),
+        ]
+        subprocess.run(argv, check=True, timeout=900)
         image_id = run(["docker", "image", "inspect", tag, "--format", "{{.Id}}"])
         validation = "const fs=require('fs');if(Number(process.versions.node.split('.')[0])<22)process.exit(1);if(!fs.statSync('/agent/AGENTS.md').isFile())process.exit(1)"
         run(
@@ -226,22 +295,7 @@ class Platform:
             ],
             timeout=30,
         )
-        hashes = run(
-            [
-                "docker",
-                "run",
-                "--rm",
-                "--network=none",
-                "--entrypoint",
-                "sha256sum",
-                image_id.strip(),
-                *[f"/usr/local/bin/{name}" for name in self.lock["binaries"]],
-            ],
-            timeout=30,
-        )
-        actual = {Path(line.split()[1]).name: line.split()[0] for line in hashes.splitlines()}
-        if actual != self.lock["binaries"]:
-            raise RuntimeError("Agent 镜像覆盖了平台固定的原版 Codex 二进制")
+        verify_runtime(image_id.strip(), self.runtime_class)
         (self.state / "image-id.txt").write_text(image_id)
         return {"image": tag, "built": True}
 
@@ -364,6 +418,9 @@ class Platform:
         )
         if package["metadata"]["manifest"]["name"] != self.name:
             raise RuntimeError("镜像中的 Agent 包名称与 agent.yaml 不一致；请执行 make build publish")
+        labels = json.loads(run(["docker", "image", "inspect", self.image]))[0]["Config"].get("Labels") or {}
+        if labels.get("a8s.io.runtime-class-ref") != self.runtime_class_ref:
+            raise ValueError("Agent 镜像的 runtime class revision 与登记声明不一致；请重新构建并发布 Agent")
         self.digest = package["digest"]
         self.package = f"{self.config['A8S_PLATFORM_PACKAGE_REPOSITORY']}@{self.digest}"
         # The image may carry native MCP configuration, but credentials and model policy remain platform-owned.
@@ -386,9 +443,14 @@ class Platform:
         host = json.loads(self.k("get", "configmap", "a8s-host-config", "-o", "json"))["data"]["config.toml"]
         combined = host.rstrip() + "\n\n" + mcp
         tomllib.loads(combined)  # Duplicate server names or malformed TOML fail before submission.
-        intent = {"agent": self.agent, "image": self.image, "hostConfig": combined}
+        intent = {
+            "agent": self.agent,
+            "image": self.image,
+            "runtimeClassRef": self.runtime_class_ref,
+            "hostConfig": combined,
+        }
         self.intent = hashlib.sha256(json.dumps(intent, sort_keys=True).encode()).hexdigest()
-        self.component = f"codex-{self.lock['version']}-{self.intent[:12]}"
+        self.component = f"{self.runtime_class['name']}-{self.intent[:12]}"
         values = {
             "A8S_EXAMPLE_PREFIX": self.prefix,
             "A8S_EXAMPLE_NAMESPACE": self.ns,
@@ -450,7 +512,7 @@ class Platform:
                 "sandbox": {
                     "provider": "kubernetes",
                     "image": image,
-                    "environmentRevision": self.component,
+                    "environmentRevision": self.runtime_class["name"] + "-" + self.base_image.split(":")[-1][:12],
                     "architecture": "amd64",
                     "resources": {
                         "cpu": str(self.cpu),
@@ -471,6 +533,7 @@ class Platform:
             },
         }
         for name, value in [
+            ("runtime-class", {**self.runtime_class, "reference": self.runtime_class_ref}),
             ("agentc", self.registration),
             ("runtime", self.runtime),
             ("deployment", self.create),
@@ -660,10 +723,15 @@ def main():
             "update",
             "delete",
             "unregister",
+            "runtime-publish",
         ],
     )
     parser.add_argument("file", type=Path, help="one Agent YAML")
+    parser.add_argument("--image", help="platform runtime image tag; only used by runtime-publish")
     arguments = parser.parse_args()
+    if arguments.action == "runtime-publish":
+        print(json.dumps(publish_runtime(arguments.file, arguments.image), ensure_ascii=False, indent=2))
+        return
     platform = Platform(arguments.file)
     if arguments.action == "build":
         response = platform.build()

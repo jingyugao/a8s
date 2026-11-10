@@ -1,9 +1,7 @@
-apiVersion: agentfile/v1
+apiVersion: a8s/v1
 name: native-codex-example
 agentImage: 192.168.133.101:30500/a8s:dev
-# This prototype uses the assembled image for both roles, including its CLI dependencies.
-sandboxImage: 192.168.133.101:30500/a8s:dev
-harness: codex
+runtimeClassRef: codex-node
 workingDir: /runtime
 resources:
   cpu: "1"
