@@ -1,7 +1,7 @@
 apiVersion: a8s/v1
 kind: AgentDeployment
 name: frontend-assistant
-agentImage: 192.168.133.101:30500/a8s:dev
+agentImage: registry.example.com/a8s:dev
 runtimeClassRef: codex-node
 workingDir: /runtime
 resources:
@@ -9,3 +9,8 @@ resources:
   memory: 1Gi
 update:
   strategy: restart
+idleReclaim:
+  # Keep running while MCP services, background work, or unknown activity remain.
+  enabled: true
+  idleTimeout: 10m
+  checkInterval: 1m

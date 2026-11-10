@@ -13,15 +13,15 @@ MANAGE := bash $(ROOT)/scripts/agent.sh
 
 help:
 	@printf '%s\n' \
-	  'make build    只构建 Agentfile；Codex + Node 由平台 runtime class 提供' \
-	  'make publish  构建并发布镜像与 Agent 包，登记时固定 digest' \
-	  'make create   发布并创建 AgentDeployment；相同内容可重复核对' \
-	  'make plan     查看已发布镜像的创建计划，不修改集群' \
-	  'make status   查询 AgentDeployment 和 Operation' \
-	  'make update   更新入口；当前安全更新尚未完成，会明确拒绝' \
-	  'make delete   删除入口；运行中 Agent 会保存下线请求并明确拒绝' \
-	  '             已确认下线或尚未创建 Agent 时，可清理专属支撑服务，保留数据' \
-	  '管理端需要 Docker、kubectl、uv；不需要本机安装 Codex 或 Go。'
+	  'make build    Build Agent content; the platform supplies Codex + Node.' \
+	  'make publish  Build and publish the content image and metadata package.' \
+	  'make create   Publish and create an AgentDeployment using fixed digests.' \
+	  'make plan     Resolve published content and write a plan; do not apply it.' \
+	  'make status   Inspect the AgentDeployment and its lifecycle operation.' \
+	  'make update   Guarded entry point; safe replacement is not yet available.' \
+	  'make delete   Active agents are retained; an offline request is saved.' \
+	  '              Verified offline agents can release supporting services.' \
+	  'Requires a configured platform, Docker, kubectl, and uv.'
 
 build:
 	$(MANAGE) build $(AGENT) --context $(PROJECT)
