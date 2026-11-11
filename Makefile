@@ -5,7 +5,7 @@ SHELL := /bin/bash
 PKGS := ./api/... ./artifacts/... ./control/... ./execution/... ./agentc/... \
 	./providers/... ./storage/... ./infra/... ./sdk/... ./guest/... ./cmd/...
 
-.PHONY: build test vet fmt gen check codex-runtime binaries image image-publish
+.PHONY: build test vet fmt gen check codex-runtime binaries image image-publish agentctl
 
 IMAGE ?= registry.example.com/a8s:dev
 RUNTIME_CLASS ?= codex-node
@@ -15,7 +15,11 @@ RUNTIME_CLASS_DIR := images/runtime-classes/$(RUNTIME_CLASS)
 codex-runtime:
 	bash images/codex/install.sh
 
-binaries:
+agentctl:
+	mkdir -p dist
+	go build -trimpath -o dist/agentctl ./cmd/agentctl
+
+binaries: agentctl
 	mkdir -p dist
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o dist/a8s ./cmd/a8s
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o dist/a8s-server ./cmd/a8s-server

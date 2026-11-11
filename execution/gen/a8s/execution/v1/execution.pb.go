@@ -254,6 +254,282 @@ func (x *OpenThreadResponse) GetRecord() *Record {
 	return nil
 }
 
+type ThreadSummary struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ThreadId      string                 `protobuf:"bytes,1,opt,name=thread_id,json=threadId,proto3" json:"thread_id,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ThreadSummary) Reset() {
+	*x = ThreadSummary{}
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ThreadSummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ThreadSummary) ProtoMessage() {}
+
+func (x *ThreadSummary) ProtoReflect() protoreflect.Message {
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ThreadSummary.ProtoReflect.Descriptor instead.
+func (*ThreadSummary) Descriptor() ([]byte, []int) {
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ThreadSummary) GetThreadId() string {
+	if x != nil {
+		return x.ThreadId
+	}
+	return ""
+}
+
+func (x *ThreadSummary) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+type ListThreadsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Resource      *Resource              `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
+	PageSize      uint32                 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	PageToken     string                 `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListThreadsRequest) Reset() {
+	*x = ListThreadsRequest{}
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListThreadsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListThreadsRequest) ProtoMessage() {}
+
+func (x *ListThreadsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListThreadsRequest.ProtoReflect.Descriptor instead.
+func (*ListThreadsRequest) Descriptor() ([]byte, []int) {
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ListThreadsRequest) GetResource() *Resource {
+	if x != nil {
+		return x.Resource
+	}
+	return nil
+}
+
+func (x *ListThreadsRequest) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListThreadsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+type ListThreadsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Threads       []*ThreadSummary       `protobuf:"bytes,1,rep,name=threads,proto3" json:"threads,omitempty"`
+	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListThreadsResponse) Reset() {
+	*x = ListThreadsResponse{}
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListThreadsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListThreadsResponse) ProtoMessage() {}
+
+func (x *ListThreadsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListThreadsResponse.ProtoReflect.Descriptor instead.
+func (*ListThreadsResponse) Descriptor() ([]byte, []int) {
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ListThreadsResponse) GetThreads() []*ThreadSummary {
+	if x != nil {
+		return x.Threads
+	}
+	return nil
+}
+
+func (x *ListThreadsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+type ReadThreadRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Resource      *Resource              `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
+	BeforeTurnId  string                 `protobuf:"bytes,2,opt,name=before_turn_id,json=beforeTurnId,proto3" json:"before_turn_id,omitempty"`
+	PageSize      uint32                 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReadThreadRequest) Reset() {
+	*x = ReadThreadRequest{}
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReadThreadRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReadThreadRequest) ProtoMessage() {}
+
+func (x *ReadThreadRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReadThreadRequest.ProtoReflect.Descriptor instead.
+func (*ReadThreadRequest) Descriptor() ([]byte, []int) {
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ReadThreadRequest) GetResource() *Resource {
+	if x != nil {
+		return x.Resource
+	}
+	return nil
+}
+
+func (x *ReadThreadRequest) GetBeforeTurnId() string {
+	if x != nil {
+		return x.BeforeTurnId
+	}
+	return ""
+}
+
+func (x *ReadThreadRequest) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type ReadThreadResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Messages         []*v1.ThreadMessage    `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
+	NextBeforeTurnId string                 `protobuf:"bytes,2,opt,name=next_before_turn_id,json=nextBeforeTurnId,proto3" json:"next_before_turn_id,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ReadThreadResponse) Reset() {
+	*x = ReadThreadResponse{}
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReadThreadResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReadThreadResponse) ProtoMessage() {}
+
+func (x *ReadThreadResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReadThreadResponse.ProtoReflect.Descriptor instead.
+func (*ReadThreadResponse) Descriptor() ([]byte, []int) {
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ReadThreadResponse) GetMessages() []*v1.ThreadMessage {
+	if x != nil {
+		return x.Messages
+	}
+	return nil
+}
+
+func (x *ReadThreadResponse) GetNextBeforeTurnId() string {
+	if x != nil {
+		return x.NextBeforeTurnId
+	}
+	return ""
+}
+
 type SubmitInputRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Resource      *Resource              `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
@@ -266,7 +542,7 @@ type SubmitInputRequest struct {
 
 func (x *SubmitInputRequest) Reset() {
 	*x = SubmitInputRequest{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[4]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -278,7 +554,7 @@ func (x *SubmitInputRequest) String() string {
 func (*SubmitInputRequest) ProtoMessage() {}
 
 func (x *SubmitInputRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[4]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -291,7 +567,7 @@ func (x *SubmitInputRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitInputRequest.ProtoReflect.Descriptor instead.
 func (*SubmitInputRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{4}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SubmitInputRequest) GetResource() *Resource {
@@ -331,7 +607,7 @@ type SubmitInputResponse struct {
 
 func (x *SubmitInputResponse) Reset() {
 	*x = SubmitInputResponse{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[5]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -343,7 +619,7 @@ func (x *SubmitInputResponse) String() string {
 func (*SubmitInputResponse) ProtoMessage() {}
 
 func (x *SubmitInputResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[5]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -356,7 +632,7 @@ func (x *SubmitInputResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitInputResponse.ProtoReflect.Descriptor instead.
 func (*SubmitInputResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{5}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SubmitInputResponse) GetRecord() *Record {
@@ -376,7 +652,7 @@ type GetInputResultRequest struct {
 
 func (x *GetInputResultRequest) Reset() {
 	*x = GetInputResultRequest{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[6]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -388,7 +664,7 @@ func (x *GetInputResultRequest) String() string {
 func (*GetInputResultRequest) ProtoMessage() {}
 
 func (x *GetInputResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[6]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -401,7 +677,7 @@ func (x *GetInputResultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInputResultRequest.ProtoReflect.Descriptor instead.
 func (*GetInputResultRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{6}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetInputResultRequest) GetResource() *Resource {
@@ -427,7 +703,7 @@ type GetInputResultResponse struct {
 
 func (x *GetInputResultResponse) Reset() {
 	*x = GetInputResultResponse{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[7]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -439,7 +715,7 @@ func (x *GetInputResultResponse) String() string {
 func (*GetInputResultResponse) ProtoMessage() {}
 
 func (x *GetInputResultResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[7]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -452,7 +728,7 @@ func (x *GetInputResultResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInputResultResponse.ProtoReflect.Descriptor instead.
 func (*GetInputResultResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{7}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetInputResultResponse) GetResult() *v1.InputResult {
@@ -474,7 +750,7 @@ type CancelRequest struct {
 
 func (x *CancelRequest) Reset() {
 	*x = CancelRequest{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[8]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -486,7 +762,7 @@ func (x *CancelRequest) String() string {
 func (*CancelRequest) ProtoMessage() {}
 
 func (x *CancelRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[8]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,7 +775,7 @@ func (x *CancelRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelRequest.ProtoReflect.Descriptor instead.
 func (*CancelRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{8}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CancelRequest) GetResource() *Resource {
@@ -539,7 +815,7 @@ type CancelResponse struct {
 
 func (x *CancelResponse) Reset() {
 	*x = CancelResponse{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[9]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -551,7 +827,7 @@ func (x *CancelResponse) String() string {
 func (*CancelResponse) ProtoMessage() {}
 
 func (x *CancelResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[9]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -564,7 +840,7 @@ func (x *CancelResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelResponse.ProtoReflect.Descriptor instead.
 func (*CancelResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{9}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CancelResponse) GetRecord() *Record {
@@ -588,7 +864,7 @@ type RespondInteractionRequest struct {
 
 func (x *RespondInteractionRequest) Reset() {
 	*x = RespondInteractionRequest{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[10]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -600,7 +876,7 @@ func (x *RespondInteractionRequest) String() string {
 func (*RespondInteractionRequest) ProtoMessage() {}
 
 func (x *RespondInteractionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[10]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -613,7 +889,7 @@ func (x *RespondInteractionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RespondInteractionRequest.ProtoReflect.Descriptor instead.
 func (*RespondInteractionRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{10}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *RespondInteractionRequest) GetResource() *Resource {
@@ -667,7 +943,7 @@ type RespondInteractionResponse struct {
 
 func (x *RespondInteractionResponse) Reset() {
 	*x = RespondInteractionResponse{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[11]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -679,7 +955,7 @@ func (x *RespondInteractionResponse) String() string {
 func (*RespondInteractionResponse) ProtoMessage() {}
 
 func (x *RespondInteractionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[11]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -692,7 +968,7 @@ func (x *RespondInteractionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RespondInteractionResponse.ProtoReflect.Descriptor instead.
 func (*RespondInteractionResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{11}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *RespondInteractionResponse) GetRecord() *Record {
@@ -712,7 +988,7 @@ type SubscribeRequest struct {
 
 func (x *SubscribeRequest) Reset() {
 	*x = SubscribeRequest{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[12]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -724,7 +1000,7 @@ func (x *SubscribeRequest) String() string {
 func (*SubscribeRequest) ProtoMessage() {}
 
 func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[12]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -737,7 +1013,7 @@ func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeRequest.ProtoReflect.Descriptor instead.
 func (*SubscribeRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{12}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *SubscribeRequest) GetResource() *Resource {
@@ -763,7 +1039,7 @@ type SubscribeResponse struct {
 
 func (x *SubscribeResponse) Reset() {
 	*x = SubscribeResponse{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[13]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -775,7 +1051,7 @@ func (x *SubscribeResponse) String() string {
 func (*SubscribeResponse) ProtoMessage() {}
 
 func (x *SubscribeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[13]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -788,7 +1064,7 @@ func (x *SubscribeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeResponse.ProtoReflect.Descriptor instead.
 func (*SubscribeResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{13}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *SubscribeResponse) GetEvent() *v1.SubscribeResponse {
@@ -809,7 +1085,7 @@ type LookupRequest struct {
 
 func (x *LookupRequest) Reset() {
 	*x = LookupRequest{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[14]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -821,7 +1097,7 @@ func (x *LookupRequest) String() string {
 func (*LookupRequest) ProtoMessage() {}
 
 func (x *LookupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[14]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -834,7 +1110,7 @@ func (x *LookupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupRequest.ProtoReflect.Descriptor instead.
 func (*LookupRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{14}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *LookupRequest) GetResource() *Resource {
@@ -867,7 +1143,7 @@ type LookupResponse struct {
 
 func (x *LookupResponse) Reset() {
 	*x = LookupResponse{}
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[15]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -879,7 +1155,7 @@ func (x *LookupResponse) String() string {
 func (*LookupResponse) ProtoMessage() {}
 
 func (x *LookupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_execution_v1_execution_proto_msgTypes[15]
+	mi := &file_a8s_execution_v1_execution_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -892,7 +1168,7 @@ func (x *LookupResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupResponse.ProtoReflect.Descriptor instead.
 func (*LookupResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{15}
+	return file_a8s_execution_v1_execution_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *LookupResponse) GetRecord() *Record {
@@ -923,7 +1199,26 @@ const file_a8s_execution_v1_execution_proto_rawDesc = "" +
 	"\vrequest_key\x18\x02 \x01(\tR\n" +
 	"requestKey\"F\n" +
 	"\x12OpenThreadResponse\x120\n" +
-	"\x06record\x18\x01 \x01(\v2\x18.a8s.execution.v1.RecordR\x06record\"\x9e\x01\n" +
+	"\x06record\x18\x01 \x01(\v2\x18.a8s.execution.v1.RecordR\x06record\"K\n" +
+	"\rThreadSummary\x12\x1b\n" +
+	"\tthread_id\x18\x01 \x01(\tR\bthreadId\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x02 \x01(\tR\tcreatedAt\"\x88\x01\n" +
+	"\x12ListThreadsRequest\x126\n" +
+	"\bresource\x18\x01 \x01(\v2\x1a.a8s.execution.v1.ResourceR\bresource\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\rR\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\"x\n" +
+	"\x13ListThreadsResponse\x129\n" +
+	"\athreads\x18\x01 \x03(\v2\x1f.a8s.execution.v1.ThreadSummaryR\athreads\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8e\x01\n" +
+	"\x11ReadThreadRequest\x126\n" +
+	"\bresource\x18\x01 \x01(\v2\x1a.a8s.execution.v1.ResourceR\bresource\x12$\n" +
+	"\x0ebefore_turn_id\x18\x02 \x01(\tR\fbeforeTurnId\x12\x1b\n" +
+	"\tpage_size\x18\x03 \x01(\rR\bpageSize\"}\n" +
+	"\x12ReadThreadResponse\x128\n" +
+	"\bmessages\x18\x01 \x03(\v2\x1c.a8s.agentc.v1.ThreadMessageR\bmessages\x12-\n" +
+	"\x13next_before_turn_id\x18\x02 \x01(\tR\x10nextBeforeTurnId\"\x9e\x01\n" +
 	"\x12SubmitInputRequest\x126\n" +
 	"\bresource\x18\x01 \x01(\v2\x1a.a8s.execution.v1.ResourceR\bresource\x12\x1f\n" +
 	"\vrequest_key\x18\x02 \x01(\tR\n" +
@@ -967,10 +1262,13 @@ const file_a8s_execution_v1_execution_proto_rawDesc = "" +
 	"\vrequest_key\x18\x03 \x01(\tR\n" +
 	"requestKey\"B\n" +
 	"\x0eLookupResponse\x120\n" +
-	"\x06record\x18\x01 \x01(\v2\x18.a8s.execution.v1.RecordR\x06record2\x8f\x05\n" +
+	"\x06record\x18\x01 \x01(\v2\x18.a8s.execution.v1.RecordR\x06record2\xc4\x06\n" +
 	"\x10ExecutionService\x12W\n" +
 	"\n" +
 	"OpenThread\x12#.a8s.execution.v1.OpenThreadRequest\x1a$.a8s.execution.v1.OpenThreadResponse\x12Z\n" +
+	"\vListThreads\x12$.a8s.execution.v1.ListThreadsRequest\x1a%.a8s.execution.v1.ListThreadsResponse\x12W\n" +
+	"\n" +
+	"ReadThread\x12#.a8s.execution.v1.ReadThreadRequest\x1a$.a8s.execution.v1.ReadThreadResponse\x12Z\n" +
 	"\vSubmitInput\x12$.a8s.execution.v1.SubmitInputRequest\x1a%.a8s.execution.v1.SubmitInputResponse\x12c\n" +
 	"\x0eGetInputResult\x12'.a8s.execution.v1.GetInputResultRequest\x1a(.a8s.execution.v1.GetInputResultResponse\x12K\n" +
 	"\x06Cancel\x12\x1f.a8s.execution.v1.CancelRequest\x1a .a8s.execution.v1.CancelResponse\x12o\n" +
@@ -990,61 +1288,75 @@ func file_a8s_execution_v1_execution_proto_rawDescGZIP() []byte {
 	return file_a8s_execution_v1_execution_proto_rawDescData
 }
 
-var file_a8s_execution_v1_execution_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_a8s_execution_v1_execution_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_a8s_execution_v1_execution_proto_goTypes = []any{
 	(*Resource)(nil),                   // 0: a8s.execution.v1.Resource
 	(*Record)(nil),                     // 1: a8s.execution.v1.Record
 	(*OpenThreadRequest)(nil),          // 2: a8s.execution.v1.OpenThreadRequest
 	(*OpenThreadResponse)(nil),         // 3: a8s.execution.v1.OpenThreadResponse
-	(*SubmitInputRequest)(nil),         // 4: a8s.execution.v1.SubmitInputRequest
-	(*SubmitInputResponse)(nil),        // 5: a8s.execution.v1.SubmitInputResponse
-	(*GetInputResultRequest)(nil),      // 6: a8s.execution.v1.GetInputResultRequest
-	(*GetInputResultResponse)(nil),     // 7: a8s.execution.v1.GetInputResultResponse
-	(*CancelRequest)(nil),              // 8: a8s.execution.v1.CancelRequest
-	(*CancelResponse)(nil),             // 9: a8s.execution.v1.CancelResponse
-	(*RespondInteractionRequest)(nil),  // 10: a8s.execution.v1.RespondInteractionRequest
-	(*RespondInteractionResponse)(nil), // 11: a8s.execution.v1.RespondInteractionResponse
-	(*SubscribeRequest)(nil),           // 12: a8s.execution.v1.SubscribeRequest
-	(*SubscribeResponse)(nil),          // 13: a8s.execution.v1.SubscribeResponse
-	(*LookupRequest)(nil),              // 14: a8s.execution.v1.LookupRequest
-	(*LookupResponse)(nil),             // 15: a8s.execution.v1.LookupResponse
-	(*v1.InputResult)(nil),             // 16: a8s.agentc.v1.InputResult
-	(*v1.SubscribeResponse)(nil),       // 17: a8s.agentc.v1.SubscribeResponse
+	(*ThreadSummary)(nil),              // 4: a8s.execution.v1.ThreadSummary
+	(*ListThreadsRequest)(nil),         // 5: a8s.execution.v1.ListThreadsRequest
+	(*ListThreadsResponse)(nil),        // 6: a8s.execution.v1.ListThreadsResponse
+	(*ReadThreadRequest)(nil),          // 7: a8s.execution.v1.ReadThreadRequest
+	(*ReadThreadResponse)(nil),         // 8: a8s.execution.v1.ReadThreadResponse
+	(*SubmitInputRequest)(nil),         // 9: a8s.execution.v1.SubmitInputRequest
+	(*SubmitInputResponse)(nil),        // 10: a8s.execution.v1.SubmitInputResponse
+	(*GetInputResultRequest)(nil),      // 11: a8s.execution.v1.GetInputResultRequest
+	(*GetInputResultResponse)(nil),     // 12: a8s.execution.v1.GetInputResultResponse
+	(*CancelRequest)(nil),              // 13: a8s.execution.v1.CancelRequest
+	(*CancelResponse)(nil),             // 14: a8s.execution.v1.CancelResponse
+	(*RespondInteractionRequest)(nil),  // 15: a8s.execution.v1.RespondInteractionRequest
+	(*RespondInteractionResponse)(nil), // 16: a8s.execution.v1.RespondInteractionResponse
+	(*SubscribeRequest)(nil),           // 17: a8s.execution.v1.SubscribeRequest
+	(*SubscribeResponse)(nil),          // 18: a8s.execution.v1.SubscribeResponse
+	(*LookupRequest)(nil),              // 19: a8s.execution.v1.LookupRequest
+	(*LookupResponse)(nil),             // 20: a8s.execution.v1.LookupResponse
+	(*v1.ThreadMessage)(nil),           // 21: a8s.agentc.v1.ThreadMessage
+	(*v1.InputResult)(nil),             // 22: a8s.agentc.v1.InputResult
+	(*v1.SubscribeResponse)(nil),       // 23: a8s.agentc.v1.SubscribeResponse
 }
 var file_a8s_execution_v1_execution_proto_depIdxs = []int32{
 	0,  // 0: a8s.execution.v1.OpenThreadRequest.resource:type_name -> a8s.execution.v1.Resource
 	1,  // 1: a8s.execution.v1.OpenThreadResponse.record:type_name -> a8s.execution.v1.Record
-	0,  // 2: a8s.execution.v1.SubmitInputRequest.resource:type_name -> a8s.execution.v1.Resource
-	1,  // 3: a8s.execution.v1.SubmitInputResponse.record:type_name -> a8s.execution.v1.Record
-	0,  // 4: a8s.execution.v1.GetInputResultRequest.resource:type_name -> a8s.execution.v1.Resource
-	16, // 5: a8s.execution.v1.GetInputResultResponse.result:type_name -> a8s.agentc.v1.InputResult
-	0,  // 6: a8s.execution.v1.CancelRequest.resource:type_name -> a8s.execution.v1.Resource
-	1,  // 7: a8s.execution.v1.CancelResponse.record:type_name -> a8s.execution.v1.Record
-	0,  // 8: a8s.execution.v1.RespondInteractionRequest.resource:type_name -> a8s.execution.v1.Resource
-	1,  // 9: a8s.execution.v1.RespondInteractionResponse.record:type_name -> a8s.execution.v1.Record
-	0,  // 10: a8s.execution.v1.SubscribeRequest.resource:type_name -> a8s.execution.v1.Resource
-	17, // 11: a8s.execution.v1.SubscribeResponse.event:type_name -> a8s.agentc.v1.SubscribeResponse
-	0,  // 12: a8s.execution.v1.LookupRequest.resource:type_name -> a8s.execution.v1.Resource
-	1,  // 13: a8s.execution.v1.LookupResponse.record:type_name -> a8s.execution.v1.Record
-	2,  // 14: a8s.execution.v1.ExecutionService.OpenThread:input_type -> a8s.execution.v1.OpenThreadRequest
-	4,  // 15: a8s.execution.v1.ExecutionService.SubmitInput:input_type -> a8s.execution.v1.SubmitInputRequest
-	6,  // 16: a8s.execution.v1.ExecutionService.GetInputResult:input_type -> a8s.execution.v1.GetInputResultRequest
-	8,  // 17: a8s.execution.v1.ExecutionService.Cancel:input_type -> a8s.execution.v1.CancelRequest
-	10, // 18: a8s.execution.v1.ExecutionService.RespondInteraction:input_type -> a8s.execution.v1.RespondInteractionRequest
-	12, // 19: a8s.execution.v1.ExecutionService.Subscribe:input_type -> a8s.execution.v1.SubscribeRequest
-	14, // 20: a8s.execution.v1.ExecutionService.Lookup:input_type -> a8s.execution.v1.LookupRequest
-	3,  // 21: a8s.execution.v1.ExecutionService.OpenThread:output_type -> a8s.execution.v1.OpenThreadResponse
-	5,  // 22: a8s.execution.v1.ExecutionService.SubmitInput:output_type -> a8s.execution.v1.SubmitInputResponse
-	7,  // 23: a8s.execution.v1.ExecutionService.GetInputResult:output_type -> a8s.execution.v1.GetInputResultResponse
-	9,  // 24: a8s.execution.v1.ExecutionService.Cancel:output_type -> a8s.execution.v1.CancelResponse
-	11, // 25: a8s.execution.v1.ExecutionService.RespondInteraction:output_type -> a8s.execution.v1.RespondInteractionResponse
-	13, // 26: a8s.execution.v1.ExecutionService.Subscribe:output_type -> a8s.execution.v1.SubscribeResponse
-	15, // 27: a8s.execution.v1.ExecutionService.Lookup:output_type -> a8s.execution.v1.LookupResponse
-	21, // [21:28] is the sub-list for method output_type
-	14, // [14:21] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	0,  // 2: a8s.execution.v1.ListThreadsRequest.resource:type_name -> a8s.execution.v1.Resource
+	4,  // 3: a8s.execution.v1.ListThreadsResponse.threads:type_name -> a8s.execution.v1.ThreadSummary
+	0,  // 4: a8s.execution.v1.ReadThreadRequest.resource:type_name -> a8s.execution.v1.Resource
+	21, // 5: a8s.execution.v1.ReadThreadResponse.messages:type_name -> a8s.agentc.v1.ThreadMessage
+	0,  // 6: a8s.execution.v1.SubmitInputRequest.resource:type_name -> a8s.execution.v1.Resource
+	1,  // 7: a8s.execution.v1.SubmitInputResponse.record:type_name -> a8s.execution.v1.Record
+	0,  // 8: a8s.execution.v1.GetInputResultRequest.resource:type_name -> a8s.execution.v1.Resource
+	22, // 9: a8s.execution.v1.GetInputResultResponse.result:type_name -> a8s.agentc.v1.InputResult
+	0,  // 10: a8s.execution.v1.CancelRequest.resource:type_name -> a8s.execution.v1.Resource
+	1,  // 11: a8s.execution.v1.CancelResponse.record:type_name -> a8s.execution.v1.Record
+	0,  // 12: a8s.execution.v1.RespondInteractionRequest.resource:type_name -> a8s.execution.v1.Resource
+	1,  // 13: a8s.execution.v1.RespondInteractionResponse.record:type_name -> a8s.execution.v1.Record
+	0,  // 14: a8s.execution.v1.SubscribeRequest.resource:type_name -> a8s.execution.v1.Resource
+	23, // 15: a8s.execution.v1.SubscribeResponse.event:type_name -> a8s.agentc.v1.SubscribeResponse
+	0,  // 16: a8s.execution.v1.LookupRequest.resource:type_name -> a8s.execution.v1.Resource
+	1,  // 17: a8s.execution.v1.LookupResponse.record:type_name -> a8s.execution.v1.Record
+	2,  // 18: a8s.execution.v1.ExecutionService.OpenThread:input_type -> a8s.execution.v1.OpenThreadRequest
+	5,  // 19: a8s.execution.v1.ExecutionService.ListThreads:input_type -> a8s.execution.v1.ListThreadsRequest
+	7,  // 20: a8s.execution.v1.ExecutionService.ReadThread:input_type -> a8s.execution.v1.ReadThreadRequest
+	9,  // 21: a8s.execution.v1.ExecutionService.SubmitInput:input_type -> a8s.execution.v1.SubmitInputRequest
+	11, // 22: a8s.execution.v1.ExecutionService.GetInputResult:input_type -> a8s.execution.v1.GetInputResultRequest
+	13, // 23: a8s.execution.v1.ExecutionService.Cancel:input_type -> a8s.execution.v1.CancelRequest
+	15, // 24: a8s.execution.v1.ExecutionService.RespondInteraction:input_type -> a8s.execution.v1.RespondInteractionRequest
+	17, // 25: a8s.execution.v1.ExecutionService.Subscribe:input_type -> a8s.execution.v1.SubscribeRequest
+	19, // 26: a8s.execution.v1.ExecutionService.Lookup:input_type -> a8s.execution.v1.LookupRequest
+	3,  // 27: a8s.execution.v1.ExecutionService.OpenThread:output_type -> a8s.execution.v1.OpenThreadResponse
+	6,  // 28: a8s.execution.v1.ExecutionService.ListThreads:output_type -> a8s.execution.v1.ListThreadsResponse
+	8,  // 29: a8s.execution.v1.ExecutionService.ReadThread:output_type -> a8s.execution.v1.ReadThreadResponse
+	10, // 30: a8s.execution.v1.ExecutionService.SubmitInput:output_type -> a8s.execution.v1.SubmitInputResponse
+	12, // 31: a8s.execution.v1.ExecutionService.GetInputResult:output_type -> a8s.execution.v1.GetInputResultResponse
+	14, // 32: a8s.execution.v1.ExecutionService.Cancel:output_type -> a8s.execution.v1.CancelResponse
+	16, // 33: a8s.execution.v1.ExecutionService.RespondInteraction:output_type -> a8s.execution.v1.RespondInteractionResponse
+	18, // 34: a8s.execution.v1.ExecutionService.Subscribe:output_type -> a8s.execution.v1.SubscribeResponse
+	20, // 35: a8s.execution.v1.ExecutionService.Lookup:output_type -> a8s.execution.v1.LookupResponse
+	27, // [27:36] is the sub-list for method output_type
+	18, // [18:27] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_a8s_execution_v1_execution_proto_init() }
@@ -1058,7 +1370,7 @@ func file_a8s_execution_v1_execution_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_a8s_execution_v1_execution_proto_rawDesc), len(file_a8s_execution_v1_execution_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

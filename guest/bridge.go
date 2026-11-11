@@ -172,6 +172,27 @@ func (b *bridge) SubmitInput(ctx context.Context, req *av1.SubmitInputRequest) (
 	return
 }
 
+func (b *bridge) ReadThread(ctx context.Context, req *av1.ReadThreadRequest) (response *av1.ReadThreadResponse, err error) {
+	value, err := b.validate(req.GetBinding())
+	if err != nil {
+		return nil, err
+	}
+	// A deliberate history read may wake the original instance once.
+	if value.Phase == "Suspended" {
+		done, err := b.idle.Begin(ctx, true)
+		if err != nil {
+			return nil, err
+		}
+		defer done()
+	}
+	err = b.execute(ctx, req.GetBinding(), false, func(ctx context.Context) error {
+		var callErr error
+		response, callErr = b.manager.client.ReadThread(ctx, req)
+		return callErr
+	})
+	return
+}
+
 func (b *bridge) GetInputResult(ctx context.Context, req *av1.GetInputResultRequest) (response *av1.GetInputResultResponse, err error) {
 	value, err := b.validate(req.GetBinding())
 	if err != nil {

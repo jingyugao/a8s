@@ -60,7 +60,7 @@ operation   get, wait
 workspace   get
 release     get
 target      get
-execution   open-thread, submit, get, lookup, cancel, respond, events
+execution   open-thread, list-threads, read-thread, submit, get, lookup, cancel, respond, events
 
 Use GROUP COMMAND --help for flags. Mutation bodies use --file JSON (or - for stdin).
 Persist --request-key and reuse it when reconciling an uncertain network result.

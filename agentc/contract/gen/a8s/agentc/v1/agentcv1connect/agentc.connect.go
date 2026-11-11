@@ -47,6 +47,9 @@ const (
 	// AgentcServiceOpenThreadProcedure is the fully-qualified name of the AgentcService's OpenThread
 	// RPC.
 	AgentcServiceOpenThreadProcedure = "/a8s.agentc.v1.AgentcService/OpenThread"
+	// AgentcServiceReadThreadProcedure is the fully-qualified name of the AgentcService's ReadThread
+	// RPC.
+	AgentcServiceReadThreadProcedure = "/a8s.agentc.v1.AgentcService/ReadThread"
 	// AgentcServiceSubmitInputProcedure is the fully-qualified name of the AgentcService's SubmitInput
 	// RPC.
 	AgentcServiceSubmitInputProcedure = "/a8s.agentc.v1.AgentcService/SubmitInput"
@@ -70,6 +73,7 @@ type AgentcServiceClient interface {
 	Drain(context.Context, *connect.Request[v1.DrainRequest]) (*connect.Response[v1.DrainResponse], error)
 	Stop(context.Context, *connect.Request[v1.StopRequest]) (*connect.Response[v1.StopResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
+	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	SubmitInput(context.Context, *connect.Request[v1.SubmitInputRequest]) (*connect.Response[v1.SubmitInputResponse], error)
 	GetInputResult(context.Context, *connect.Request[v1.GetInputResultRequest]) (*connect.Response[v1.GetInputResultResponse], error)
 	Cancel(context.Context, *connect.Request[v1.CancelRequest]) (*connect.Response[v1.CancelResponse], error)
@@ -124,6 +128,12 @@ func NewAgentcServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(agentcServiceMethods.ByName("OpenThread")),
 			connect.WithClientOptions(opts...),
 		),
+		readThread: connect.NewClient[v1.ReadThreadRequest, v1.ReadThreadResponse](
+			httpClient,
+			baseURL+AgentcServiceReadThreadProcedure,
+			connect.WithSchema(agentcServiceMethods.ByName("ReadThread")),
+			connect.WithClientOptions(opts...),
+		),
 		submitInput: connect.NewClient[v1.SubmitInputRequest, v1.SubmitInputResponse](
 			httpClient,
 			baseURL+AgentcServiceSubmitInputProcedure,
@@ -165,6 +175,7 @@ type agentcServiceClient struct {
 	drain              *connect.Client[v1.DrainRequest, v1.DrainResponse]
 	stop               *connect.Client[v1.StopRequest, v1.StopResponse]
 	openThread         *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
+	readThread         *connect.Client[v1.ReadThreadRequest, v1.ReadThreadResponse]
 	submitInput        *connect.Client[v1.SubmitInputRequest, v1.SubmitInputResponse]
 	getInputResult     *connect.Client[v1.GetInputResultRequest, v1.GetInputResultResponse]
 	cancel             *connect.Client[v1.CancelRequest, v1.CancelResponse]
@@ -202,6 +213,11 @@ func (c *agentcServiceClient) OpenThread(ctx context.Context, req *connect.Reque
 	return c.openThread.CallUnary(ctx, req)
 }
 
+// ReadThread calls a8s.agentc.v1.AgentcService.ReadThread.
+func (c *agentcServiceClient) ReadThread(ctx context.Context, req *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
+	return c.readThread.CallUnary(ctx, req)
+}
+
 // SubmitInput calls a8s.agentc.v1.AgentcService.SubmitInput.
 func (c *agentcServiceClient) SubmitInput(ctx context.Context, req *connect.Request[v1.SubmitInputRequest]) (*connect.Response[v1.SubmitInputResponse], error) {
 	return c.submitInput.CallUnary(ctx, req)
@@ -235,6 +251,7 @@ type AgentcServiceHandler interface {
 	Drain(context.Context, *connect.Request[v1.DrainRequest]) (*connect.Response[v1.DrainResponse], error)
 	Stop(context.Context, *connect.Request[v1.StopRequest]) (*connect.Response[v1.StopResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
+	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	SubmitInput(context.Context, *connect.Request[v1.SubmitInputRequest]) (*connect.Response[v1.SubmitInputResponse], error)
 	GetInputResult(context.Context, *connect.Request[v1.GetInputResultRequest]) (*connect.Response[v1.GetInputResultResponse], error)
 	Cancel(context.Context, *connect.Request[v1.CancelRequest]) (*connect.Response[v1.CancelResponse], error)
@@ -285,6 +302,12 @@ func NewAgentcServiceHandler(svc AgentcServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(agentcServiceMethods.ByName("OpenThread")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentcServiceReadThreadHandler := connect.NewUnaryHandler(
+		AgentcServiceReadThreadProcedure,
+		svc.ReadThread,
+		connect.WithSchema(agentcServiceMethods.ByName("ReadThread")),
+		connect.WithHandlerOptions(opts...),
+	)
 	agentcServiceSubmitInputHandler := connect.NewUnaryHandler(
 		AgentcServiceSubmitInputProcedure,
 		svc.SubmitInput,
@@ -329,6 +352,8 @@ func NewAgentcServiceHandler(svc AgentcServiceHandler, opts ...connect.HandlerOp
 			agentcServiceStopHandler.ServeHTTP(w, r)
 		case AgentcServiceOpenThreadProcedure:
 			agentcServiceOpenThreadHandler.ServeHTTP(w, r)
+		case AgentcServiceReadThreadProcedure:
+			agentcServiceReadThreadHandler.ServeHTTP(w, r)
 		case AgentcServiceSubmitInputProcedure:
 			agentcServiceSubmitInputHandler.ServeHTTP(w, r)
 		case AgentcServiceGetInputResultProcedure:
@@ -370,6 +395,10 @@ func (UnimplementedAgentcServiceHandler) Stop(context.Context, *connect.Request[
 
 func (UnimplementedAgentcServiceHandler) OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("a8s.agentc.v1.AgentcService.OpenThread is not implemented"))
+}
+
+func (UnimplementedAgentcServiceHandler) ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("a8s.agentc.v1.AgentcService.ReadThread is not implemented"))
 }
 
 func (UnimplementedAgentcServiceHandler) SubmitInput(context.Context, *connect.Request[v1.SubmitInputRequest]) (*connect.Response[v1.SubmitInputResponse], error) {

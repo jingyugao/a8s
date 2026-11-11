@@ -28,6 +28,9 @@ func executionCommand(ctx context.Context, command string, args []string, c *con
 	interaction := fs.String("interaction", "", "interaction ID")
 	decision := fs.String("decision", "", "interaction decision")
 	kind := fs.String("kind", "SubmitInput", "request kind for lookup")
+	pageSize := fs.Uint("page-size", 20, "thread/history page size (1-100)")
+	pageToken := fs.String("page-token", "", "thread list page token")
+	beforeTurn := fs.String("before-turn", "", "read history before this Turn ID")
 	if err := fs.Parse(args); err != nil {
 		return nil, err
 	}
@@ -52,6 +55,24 @@ func executionCommand(ctx context.Context, command string, args []string, c *con
 		}
 	}
 	switch command {
+	case "list-threads":
+		if *pageSize > 100 {
+			return nil, errors.New("page size must not exceed 100")
+		}
+		res, err := client.Execution.ListThreads(ctx, connect.NewRequest(&v1.ListThreadsRequest{Resource: resource, PageSize: uint32(*pageSize), PageToken: *pageToken}))
+		if err != nil {
+			return nil, err
+		}
+		return res.Msg, nil
+	case "read-thread":
+		if *pageSize > 100 {
+			return nil, errors.New("page size must not exceed 100")
+		}
+		res, err := client.Execution.ReadThread(ctx, connect.NewRequest(&v1.ReadThreadRequest{Resource: resource, PageSize: uint32(*pageSize), BeforeTurnId: *beforeTurn}))
+		if err != nil {
+			return nil, err
+		}
+		return res.Msg, nil
 	case "open-thread":
 		req := &v1.OpenThreadRequest{Resource: resource}
 		if *file != "" {

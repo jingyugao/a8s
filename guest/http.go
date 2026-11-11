@@ -84,7 +84,7 @@ func Handler(manager *Manager, idle *controllers.IdleController, token string) (
 		write(w, 200, value)
 	})
 	_, managed := transport.NewHandler(&bridge{manager: manager, idle: idle}, 35*time.Second)
-	methods := map[string]bool{"OpenThread": true, "SubmitInput": true, "GetInputResult": true, "Cancel": true, "RespondInteraction": true, "Subscribe": true}
+	methods := map[string]bool{"OpenThread": true, "ReadThread": true, "SubmitInput": true, "GetInputResult": true, "Cancel": true, "RespondInteraction": true, "Subscribe": true}
 	mux.HandleFunc("/a8s.agentc.v1.AgentcService/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("A8s-Workspace") == "" {
 			managed.ServeHTTP(w, r)

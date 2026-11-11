@@ -4,7 +4,7 @@
 
 import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
-import type { InputResult, SubscribeResponse as SubscribeResponse$1 } from "../../agentc/v1/agentc_pb.js";
+import type { InputResult, SubscribeResponse as SubscribeResponse$1, ThreadMessage } from "../../agentc/v1/agentc_pb.js";
 import { file_a8s_agentc_v1_agentc } from "../../agentc/v1/agentc_pb.js";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file a8s/execution/v1/execution.proto.
  */
 export const file_a8s_execution_v1_execution: GenFile = /*@__PURE__*/
-  fileDesc("CiBhOHMvZXhlY3V0aW9uL3YxL2V4ZWN1dGlvbi5wcm90bxIQYThzLmV4ZWN1dGlvbi52MSJZCghSZXNvdXJjZRINCgVzY29wZRgBIAEoCRIVCg1kZXBsb3ltZW50X2lkGAIgASgJEhQKDHdvcmtzcGFjZV9pZBgDIAEoCRIRCgl0aHJlYWRfaWQYBCABKAkiTwoGUmVjb3JkEhIKCnJlcXVlc3RfaWQYASABKAkSDQoFc3RhdGUYAiABKAkSEQoJdGhyZWFkX2lkGAMgASgJEg8KB3R1cm5faWQYBCABKAkiVgoRT3BlblRocmVhZFJlcXVlc3QSLAoIcmVzb3VyY2UYASABKAsyGi5hOHMuZXhlY3V0aW9uLnYxLlJlc291cmNlEhMKC3JlcXVlc3Rfa2V5GAIgASgJIj4KEk9wZW5UaHJlYWRSZXNwb25zZRIoCgZyZWNvcmQYASABKAsyGC5hOHMuZXhlY3V0aW9uLnYxLlJlY29yZCJ4ChJTdWJtaXRJbnB1dFJlcXVlc3QSLAoIcmVzb3VyY2UYASABKAsyGi5hOHMuZXhlY3V0aW9uLnYxLlJlc291cmNlEhMKC3JlcXVlc3Rfa2V5GAIgASgJEgwKBHRleHQYAyABKAkSEQoJYXV0aG9yX2lkGAQgASgJIj8KE1N1Ym1pdElucHV0UmVzcG9uc2USKAoGcmVjb3JkGAEgASgLMhguYThzLmV4ZWN1dGlvbi52MS5SZWNvcmQiWQoVR2V0SW5wdXRSZXN1bHRSZXF1ZXN0EiwKCHJlc291cmNlGAEgASgLMhouYThzLmV4ZWN1dGlvbi52MS5SZXNvdXJjZRISCgpyZXF1ZXN0X2lkGAIgASgJIkQKFkdldElucHV0UmVzdWx0UmVzcG9uc2USKgoGcmVzdWx0GAEgASgLMhouYThzLmFnZW50Yy52MS5JbnB1dFJlc3VsdCJ9Cg1DYW5jZWxSZXF1ZXN0EiwKCHJlc291cmNlGAEgASgLMhouYThzLmV4ZWN1dGlvbi52MS5SZXNvdXJjZRITCgtyZXF1ZXN0X2tleRgCIAEoCRIYChBpbnB1dF9yZXF1ZXN0X2lkGAMgASgJEg8KB3R1cm5faWQYBCABKAkiOgoOQ2FuY2VsUmVzcG9uc2USKAoGcmVjb3JkGAEgASgLMhguYThzLmV4ZWN1dGlvbi52MS5SZWNvcmQiswEKGVJlc3BvbmRJbnRlcmFjdGlvblJlcXVlc3QSLAoIcmVzb3VyY2UYASABKAsyGi5hOHMuZXhlY3V0aW9uLnYxLlJlc291cmNlEhMKC3JlcXVlc3Rfa2V5GAIgASgJEhgKEGlucHV0X3JlcXVlc3RfaWQYAyABKAkSDwoHdHVybl9pZBgEIAEoCRIWCg5pbnRlcmFjdGlvbl9pZBgFIAEoCRIQCghkZWNpc2lvbhgGIAEoCSJGChpSZXNwb25kSW50ZXJhY3Rpb25SZXNwb25zZRIoCgZyZWNvcmQYASABKAsyGC5hOHMuZXhlY3V0aW9uLnYxLlJlY29yZCJaChBTdWJzY3JpYmVSZXF1ZXN0EiwKCHJlc291cmNlGAEgASgLMhouYThzLmV4ZWN1dGlvbi52MS5SZXNvdXJjZRIYChBpbnB1dF9yZXF1ZXN0X2lkGAIgASgJIkQKEVN1YnNjcmliZVJlc3BvbnNlEi8KBWV2ZW50GAEgASgLMiAuYThzLmFnZW50Yy52MS5TdWJzY3JpYmVSZXNwb25zZSJgCg1Mb29rdXBSZXF1ZXN0EiwKCHJlc291cmNlGAEgASgLMhouYThzLmV4ZWN1dGlvbi52MS5SZXNvdXJjZRIMCgRraW5kGAIgASgJEhMKC3JlcXVlc3Rfa2V5GAMgASgJIjoKDkxvb2t1cFJlc3BvbnNlEigKBnJlY29yZBgBIAEoCzIYLmE4cy5leGVjdXRpb24udjEuUmVjb3JkMo8FChBFeGVjdXRpb25TZXJ2aWNlElcKCk9wZW5UaHJlYWQSIy5hOHMuZXhlY3V0aW9uLnYxLk9wZW5UaHJlYWRSZXF1ZXN0GiQuYThzLmV4ZWN1dGlvbi52MS5PcGVuVGhyZWFkUmVzcG9uc2USWgoLU3VibWl0SW5wdXQSJC5hOHMuZXhlY3V0aW9uLnYxLlN1Ym1pdElucHV0UmVxdWVzdBolLmE4cy5leGVjdXRpb24udjEuU3VibWl0SW5wdXRSZXNwb25zZRJjCg5HZXRJbnB1dFJlc3VsdBInLmE4cy5leGVjdXRpb24udjEuR2V0SW5wdXRSZXN1bHRSZXF1ZXN0GiguYThzLmV4ZWN1dGlvbi52MS5HZXRJbnB1dFJlc3VsdFJlc3BvbnNlEksKBkNhbmNlbBIfLmE4cy5leGVjdXRpb24udjEuQ2FuY2VsUmVxdWVzdBogLmE4cy5leGVjdXRpb24udjEuQ2FuY2VsUmVzcG9uc2USbwoSUmVzcG9uZEludGVyYWN0aW9uEisuYThzLmV4ZWN1dGlvbi52MS5SZXNwb25kSW50ZXJhY3Rpb25SZXF1ZXN0GiwuYThzLmV4ZWN1dGlvbi52MS5SZXNwb25kSW50ZXJhY3Rpb25SZXNwb25zZRJWCglTdWJzY3JpYmUSIi5hOHMuZXhlY3V0aW9uLnYxLlN1YnNjcmliZVJlcXVlc3QaIy5hOHMuZXhlY3V0aW9uLnYxLlN1YnNjcmliZVJlc3BvbnNlMAESSwoGTG9va3VwEh8uYThzLmV4ZWN1dGlvbi52MS5Mb29rdXBSZXF1ZXN0GiAuYThzLmV4ZWN1dGlvbi52MS5Mb29rdXBSZXNwb25zZUJFWkNnaXRodWIuY29tL2ppbmd5dWdhby9hOHMvZXhlY3V0aW9uL2dlbi9hOHMvZXhlY3V0aW9uL3YxO2V4ZWN1dGlvbnYxYgZwcm90bzM", [file_a8s_agentc_v1_agentc]);
+  fileDesc("CiBhOHMvZXhlY3V0aW9uL3YxL2V4ZWN1dGlvbi5wcm90bxIQYThzLmV4ZWN1dGlvbi52MSJZCghSZXNvdXJjZRINCgVzY29wZRgBIAEoCRIVCg1kZXBsb3ltZW50X2lkGAIgASgJEhQKDHdvcmtzcGFjZV9pZBgDIAEoCRIRCgl0aHJlYWRfaWQYBCABKAkiTwoGUmVjb3JkEhIKCnJlcXVlc3RfaWQYASABKAkSDQoFc3RhdGUYAiABKAkSEQoJdGhyZWFkX2lkGAMgASgJEg8KB3R1cm5faWQYBCABKAkiVgoRT3BlblRocmVhZFJlcXVlc3QSLAoIcmVzb3VyY2UYASABKAsyGi5hOHMuZXhlY3V0aW9uLnYxLlJlc291cmNlEhMKC3JlcXVlc3Rfa2V5GAIgASgJIj4KEk9wZW5UaHJlYWRSZXNwb25zZRIoCgZyZWNvcmQYASABKAsyGC5hOHMuZXhlY3V0aW9uLnYxLlJlY29yZCI2Cg1UaHJlYWRTdW1tYXJ5EhEKCXRocmVhZF9pZBgBIAEoCRISCgpjcmVhdGVkX2F0GAIgASgJImkKEkxpc3RUaHJlYWRzUmVxdWVzdBIsCghyZXNvdXJjZRgBIAEoCzIaLmE4cy5leGVjdXRpb24udjEuUmVzb3VyY2USEQoJcGFnZV9zaXplGAIgASgNEhIKCnBhZ2VfdG9rZW4YAyABKAkiYAoTTGlzdFRocmVhZHNSZXNwb25zZRIwCgd0aHJlYWRzGAEgAygLMh8uYThzLmV4ZWN1dGlvbi52MS5UaHJlYWRTdW1tYXJ5EhcKD25leHRfcGFnZV90b2tlbhgCIAEoCSJsChFSZWFkVGhyZWFkUmVxdWVzdBIsCghyZXNvdXJjZRgBIAEoCzIaLmE4cy5leGVjdXRpb24udjEuUmVzb3VyY2USFgoOYmVmb3JlX3R1cm5faWQYAiABKAkSEQoJcGFnZV9zaXplGAMgASgNImEKElJlYWRUaHJlYWRSZXNwb25zZRIuCghtZXNzYWdlcxgBIAMoCzIcLmE4cy5hZ2VudGMudjEuVGhyZWFkTWVzc2FnZRIbChNuZXh0X2JlZm9yZV90dXJuX2lkGAIgASgJIngKElN1Ym1pdElucHV0UmVxdWVzdBIsCghyZXNvdXJjZRgBIAEoCzIaLmE4cy5leGVjdXRpb24udjEuUmVzb3VyY2USEwoLcmVxdWVzdF9rZXkYAiABKAkSDAoEdGV4dBgDIAEoCRIRCglhdXRob3JfaWQYBCABKAkiPwoTU3VibWl0SW5wdXRSZXNwb25zZRIoCgZyZWNvcmQYASABKAsyGC5hOHMuZXhlY3V0aW9uLnYxLlJlY29yZCJZChVHZXRJbnB1dFJlc3VsdFJlcXVlc3QSLAoIcmVzb3VyY2UYASABKAsyGi5hOHMuZXhlY3V0aW9uLnYxLlJlc291cmNlEhIKCnJlcXVlc3RfaWQYAiABKAkiRAoWR2V0SW5wdXRSZXN1bHRSZXNwb25zZRIqCgZyZXN1bHQYASABKAsyGi5hOHMuYWdlbnRjLnYxLklucHV0UmVzdWx0In0KDUNhbmNlbFJlcXVlc3QSLAoIcmVzb3VyY2UYASABKAsyGi5hOHMuZXhlY3V0aW9uLnYxLlJlc291cmNlEhMKC3JlcXVlc3Rfa2V5GAIgASgJEhgKEGlucHV0X3JlcXVlc3RfaWQYAyABKAkSDwoHdHVybl9pZBgEIAEoCSI6Cg5DYW5jZWxSZXNwb25zZRIoCgZyZWNvcmQYASABKAsyGC5hOHMuZXhlY3V0aW9uLnYxLlJlY29yZCKzAQoZUmVzcG9uZEludGVyYWN0aW9uUmVxdWVzdBIsCghyZXNvdXJjZRgBIAEoCzIaLmE4cy5leGVjdXRpb24udjEuUmVzb3VyY2USEwoLcmVxdWVzdF9rZXkYAiABKAkSGAoQaW5wdXRfcmVxdWVzdF9pZBgDIAEoCRIPCgd0dXJuX2lkGAQgASgJEhYKDmludGVyYWN0aW9uX2lkGAUgASgJEhAKCGRlY2lzaW9uGAYgASgJIkYKGlJlc3BvbmRJbnRlcmFjdGlvblJlc3BvbnNlEigKBnJlY29yZBgBIAEoCzIYLmE4cy5leGVjdXRpb24udjEuUmVjb3JkIloKEFN1YnNjcmliZVJlcXVlc3QSLAoIcmVzb3VyY2UYASABKAsyGi5hOHMuZXhlY3V0aW9uLnYxLlJlc291cmNlEhgKEGlucHV0X3JlcXVlc3RfaWQYAiABKAkiRAoRU3Vic2NyaWJlUmVzcG9uc2USLwoFZXZlbnQYASABKAsyIC5hOHMuYWdlbnRjLnYxLlN1YnNjcmliZVJlc3BvbnNlImAKDUxvb2t1cFJlcXVlc3QSLAoIcmVzb3VyY2UYASABKAsyGi5hOHMuZXhlY3V0aW9uLnYxLlJlc291cmNlEgwKBGtpbmQYAiABKAkSEwoLcmVxdWVzdF9rZXkYAyABKAkiOgoOTG9va3VwUmVzcG9uc2USKAoGcmVjb3JkGAEgASgLMhguYThzLmV4ZWN1dGlvbi52MS5SZWNvcmQyxAYKEEV4ZWN1dGlvblNlcnZpY2USVwoKT3BlblRocmVhZBIjLmE4cy5leGVjdXRpb24udjEuT3BlblRocmVhZFJlcXVlc3QaJC5hOHMuZXhlY3V0aW9uLnYxLk9wZW5UaHJlYWRSZXNwb25zZRJaCgtMaXN0VGhyZWFkcxIkLmE4cy5leGVjdXRpb24udjEuTGlzdFRocmVhZHNSZXF1ZXN0GiUuYThzLmV4ZWN1dGlvbi52MS5MaXN0VGhyZWFkc1Jlc3BvbnNlElcKClJlYWRUaHJlYWQSIy5hOHMuZXhlY3V0aW9uLnYxLlJlYWRUaHJlYWRSZXF1ZXN0GiQuYThzLmV4ZWN1dGlvbi52MS5SZWFkVGhyZWFkUmVzcG9uc2USWgoLU3VibWl0SW5wdXQSJC5hOHMuZXhlY3V0aW9uLnYxLlN1Ym1pdElucHV0UmVxdWVzdBolLmE4cy5leGVjdXRpb24udjEuU3VibWl0SW5wdXRSZXNwb25zZRJjCg5HZXRJbnB1dFJlc3VsdBInLmE4cy5leGVjdXRpb24udjEuR2V0SW5wdXRSZXN1bHRSZXF1ZXN0GiguYThzLmV4ZWN1dGlvbi52MS5HZXRJbnB1dFJlc3VsdFJlc3BvbnNlEksKBkNhbmNlbBIfLmE4cy5leGVjdXRpb24udjEuQ2FuY2VsUmVxdWVzdBogLmE4cy5leGVjdXRpb24udjEuQ2FuY2VsUmVzcG9uc2USbwoSUmVzcG9uZEludGVyYWN0aW9uEisuYThzLmV4ZWN1dGlvbi52MS5SZXNwb25kSW50ZXJhY3Rpb25SZXF1ZXN0GiwuYThzLmV4ZWN1dGlvbi52MS5SZXNwb25kSW50ZXJhY3Rpb25SZXNwb25zZRJWCglTdWJzY3JpYmUSIi5hOHMuZXhlY3V0aW9uLnYxLlN1YnNjcmliZVJlcXVlc3QaIy5hOHMuZXhlY3V0aW9uLnYxLlN1YnNjcmliZVJlc3BvbnNlMAESSwoGTG9va3VwEh8uYThzLmV4ZWN1dGlvbi52MS5Mb29rdXBSZXF1ZXN0GiAuYThzLmV4ZWN1dGlvbi52MS5Mb29rdXBSZXNwb25zZUJFWkNnaXRodWIuY29tL2ppbmd5dWdhby9hOHMvZXhlY3V0aW9uL2dlbi9hOHMvZXhlY3V0aW9uL3YxO2V4ZWN1dGlvbnYxYgZwcm90bzM", [file_a8s_agentc_v1_agentc]);
 
 /**
  * @generated from message a8s.execution.v1.Resource
@@ -118,6 +118,126 @@ export const OpenThreadResponseSchema: GenMessage<OpenThreadResponse> = /*@__PUR
   messageDesc(file_a8s_execution_v1_execution, 3);
 
 /**
+ * @generated from message a8s.execution.v1.ThreadSummary
+ */
+export type ThreadSummary = Message<"a8s.execution.v1.ThreadSummary"> & {
+  /**
+   * @generated from field: string thread_id = 1;
+   */
+  threadId: string;
+
+  /**
+   * @generated from field: string created_at = 2;
+   */
+  createdAt: string;
+};
+
+/**
+ * Describes the message a8s.execution.v1.ThreadSummary.
+ * Use `create(ThreadSummarySchema)` to create a new message.
+ */
+export const ThreadSummarySchema: GenMessage<ThreadSummary> = /*@__PURE__*/
+  messageDesc(file_a8s_execution_v1_execution, 4);
+
+/**
+ * @generated from message a8s.execution.v1.ListThreadsRequest
+ */
+export type ListThreadsRequest = Message<"a8s.execution.v1.ListThreadsRequest"> & {
+  /**
+   * @generated from field: a8s.execution.v1.Resource resource = 1;
+   */
+  resource?: Resource | undefined;
+
+  /**
+   * @generated from field: uint32 page_size = 2;
+   */
+  pageSize: number;
+
+  /**
+   * @generated from field: string page_token = 3;
+   */
+  pageToken: string;
+};
+
+/**
+ * Describes the message a8s.execution.v1.ListThreadsRequest.
+ * Use `create(ListThreadsRequestSchema)` to create a new message.
+ */
+export const ListThreadsRequestSchema: GenMessage<ListThreadsRequest> = /*@__PURE__*/
+  messageDesc(file_a8s_execution_v1_execution, 5);
+
+/**
+ * @generated from message a8s.execution.v1.ListThreadsResponse
+ */
+export type ListThreadsResponse = Message<"a8s.execution.v1.ListThreadsResponse"> & {
+  /**
+   * @generated from field: repeated a8s.execution.v1.ThreadSummary threads = 1;
+   */
+  threads: ThreadSummary[];
+
+  /**
+   * @generated from field: string next_page_token = 2;
+   */
+  nextPageToken: string;
+};
+
+/**
+ * Describes the message a8s.execution.v1.ListThreadsResponse.
+ * Use `create(ListThreadsResponseSchema)` to create a new message.
+ */
+export const ListThreadsResponseSchema: GenMessage<ListThreadsResponse> = /*@__PURE__*/
+  messageDesc(file_a8s_execution_v1_execution, 6);
+
+/**
+ * @generated from message a8s.execution.v1.ReadThreadRequest
+ */
+export type ReadThreadRequest = Message<"a8s.execution.v1.ReadThreadRequest"> & {
+  /**
+   * @generated from field: a8s.execution.v1.Resource resource = 1;
+   */
+  resource?: Resource | undefined;
+
+  /**
+   * @generated from field: string before_turn_id = 2;
+   */
+  beforeTurnId: string;
+
+  /**
+   * @generated from field: uint32 page_size = 3;
+   */
+  pageSize: number;
+};
+
+/**
+ * Describes the message a8s.execution.v1.ReadThreadRequest.
+ * Use `create(ReadThreadRequestSchema)` to create a new message.
+ */
+export const ReadThreadRequestSchema: GenMessage<ReadThreadRequest> = /*@__PURE__*/
+  messageDesc(file_a8s_execution_v1_execution, 7);
+
+/**
+ * @generated from message a8s.execution.v1.ReadThreadResponse
+ */
+export type ReadThreadResponse = Message<"a8s.execution.v1.ReadThreadResponse"> & {
+  /**
+   * @generated from field: repeated a8s.agentc.v1.ThreadMessage messages = 1;
+   */
+  messages: ThreadMessage[];
+
+  /**
+   * @generated from field: string next_before_turn_id = 2;
+   */
+  nextBeforeTurnId: string;
+};
+
+/**
+ * Describes the message a8s.execution.v1.ReadThreadResponse.
+ * Use `create(ReadThreadResponseSchema)` to create a new message.
+ */
+export const ReadThreadResponseSchema: GenMessage<ReadThreadResponse> = /*@__PURE__*/
+  messageDesc(file_a8s_execution_v1_execution, 8);
+
+/**
  * @generated from message a8s.execution.v1.SubmitInputRequest
  */
 export type SubmitInputRequest = Message<"a8s.execution.v1.SubmitInputRequest"> & {
@@ -147,7 +267,7 @@ export type SubmitInputRequest = Message<"a8s.execution.v1.SubmitInputRequest"> 
  * Use `create(SubmitInputRequestSchema)` to create a new message.
  */
 export const SubmitInputRequestSchema: GenMessage<SubmitInputRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 4);
+  messageDesc(file_a8s_execution_v1_execution, 9);
 
 /**
  * @generated from message a8s.execution.v1.SubmitInputResponse
@@ -164,7 +284,7 @@ export type SubmitInputResponse = Message<"a8s.execution.v1.SubmitInputResponse"
  * Use `create(SubmitInputResponseSchema)` to create a new message.
  */
 export const SubmitInputResponseSchema: GenMessage<SubmitInputResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 5);
+  messageDesc(file_a8s_execution_v1_execution, 10);
 
 /**
  * @generated from message a8s.execution.v1.GetInputResultRequest
@@ -186,7 +306,7 @@ export type GetInputResultRequest = Message<"a8s.execution.v1.GetInputResultRequ
  * Use `create(GetInputResultRequestSchema)` to create a new message.
  */
 export const GetInputResultRequestSchema: GenMessage<GetInputResultRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 6);
+  messageDesc(file_a8s_execution_v1_execution, 11);
 
 /**
  * @generated from message a8s.execution.v1.GetInputResultResponse
@@ -203,7 +323,7 @@ export type GetInputResultResponse = Message<"a8s.execution.v1.GetInputResultRes
  * Use `create(GetInputResultResponseSchema)` to create a new message.
  */
 export const GetInputResultResponseSchema: GenMessage<GetInputResultResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 7);
+  messageDesc(file_a8s_execution_v1_execution, 12);
 
 /**
  * @generated from message a8s.execution.v1.CancelRequest
@@ -235,7 +355,7 @@ export type CancelRequest = Message<"a8s.execution.v1.CancelRequest"> & {
  * Use `create(CancelRequestSchema)` to create a new message.
  */
 export const CancelRequestSchema: GenMessage<CancelRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 8);
+  messageDesc(file_a8s_execution_v1_execution, 13);
 
 /**
  * @generated from message a8s.execution.v1.CancelResponse
@@ -252,7 +372,7 @@ export type CancelResponse = Message<"a8s.execution.v1.CancelResponse"> & {
  * Use `create(CancelResponseSchema)` to create a new message.
  */
 export const CancelResponseSchema: GenMessage<CancelResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 9);
+  messageDesc(file_a8s_execution_v1_execution, 14);
 
 /**
  * @generated from message a8s.execution.v1.RespondInteractionRequest
@@ -294,7 +414,7 @@ export type RespondInteractionRequest = Message<"a8s.execution.v1.RespondInterac
  * Use `create(RespondInteractionRequestSchema)` to create a new message.
  */
 export const RespondInteractionRequestSchema: GenMessage<RespondInteractionRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 10);
+  messageDesc(file_a8s_execution_v1_execution, 15);
 
 /**
  * @generated from message a8s.execution.v1.RespondInteractionResponse
@@ -311,7 +431,7 @@ export type RespondInteractionResponse = Message<"a8s.execution.v1.RespondIntera
  * Use `create(RespondInteractionResponseSchema)` to create a new message.
  */
 export const RespondInteractionResponseSchema: GenMessage<RespondInteractionResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 11);
+  messageDesc(file_a8s_execution_v1_execution, 16);
 
 /**
  * @generated from message a8s.execution.v1.SubscribeRequest
@@ -333,7 +453,7 @@ export type SubscribeRequest = Message<"a8s.execution.v1.SubscribeRequest"> & {
  * Use `create(SubscribeRequestSchema)` to create a new message.
  */
 export const SubscribeRequestSchema: GenMessage<SubscribeRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 12);
+  messageDesc(file_a8s_execution_v1_execution, 17);
 
 /**
  * @generated from message a8s.execution.v1.SubscribeResponse
@@ -350,7 +470,7 @@ export type SubscribeResponse = Message<"a8s.execution.v1.SubscribeResponse"> & 
  * Use `create(SubscribeResponseSchema)` to create a new message.
  */
 export const SubscribeResponseSchema: GenMessage<SubscribeResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 13);
+  messageDesc(file_a8s_execution_v1_execution, 18);
 
 /**
  * @generated from message a8s.execution.v1.LookupRequest
@@ -377,7 +497,7 @@ export type LookupRequest = Message<"a8s.execution.v1.LookupRequest"> & {
  * Use `create(LookupRequestSchema)` to create a new message.
  */
 export const LookupRequestSchema: GenMessage<LookupRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 14);
+  messageDesc(file_a8s_execution_v1_execution, 19);
 
 /**
  * @generated from message a8s.execution.v1.LookupResponse
@@ -394,7 +514,7 @@ export type LookupResponse = Message<"a8s.execution.v1.LookupResponse"> & {
  * Use `create(LookupResponseSchema)` to create a new message.
  */
 export const LookupResponseSchema: GenMessage<LookupResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_execution_v1_execution, 15);
+  messageDesc(file_a8s_execution_v1_execution, 20);
 
 /**
  * @generated from service a8s.execution.v1.ExecutionService
@@ -407,6 +527,22 @@ export const ExecutionService: GenService<{
     methodKind: "unary";
     input: typeof OpenThreadRequestSchema;
     output: typeof OpenThreadResponseSchema;
+  },
+  /**
+   * @generated from rpc a8s.execution.v1.ExecutionService.ListThreads
+   */
+  listThreads: {
+    methodKind: "unary";
+    input: typeof ListThreadsRequestSchema;
+    output: typeof ListThreadsResponseSchema;
+  },
+  /**
+   * @generated from rpc a8s.execution.v1.ExecutionService.ReadThread
+   */
+  readThread: {
+    methodKind: "unary";
+    input: typeof ReadThreadRequestSchema;
+    output: typeof ReadThreadResponseSchema;
   },
   /**
    * @generated from rpc a8s.execution.v1.ExecutionService.SubmitInput

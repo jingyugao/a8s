@@ -19,6 +19,7 @@ type Lifecycle interface {
 
 type Executor interface {
 	OpenThread(context.Context, *v1.OpenThreadRequest) (*v1.OpenThreadResponse, error)
+	ReadThread(context.Context, *v1.ReadThreadRequest) (*v1.ReadThreadResponse, error)
 	SubmitInput(context.Context, *v1.SubmitInputRequest) (*v1.SubmitInputResponse, error)
 	GetInputResult(context.Context, *v1.GetInputResultRequest) (*v1.GetInputResultResponse, error)
 	Cancel(context.Context, *v1.CancelRequest) (*v1.CancelResponse, error)

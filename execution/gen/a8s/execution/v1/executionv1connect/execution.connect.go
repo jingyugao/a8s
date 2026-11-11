@@ -36,6 +36,12 @@ const (
 	// ExecutionServiceOpenThreadProcedure is the fully-qualified name of the ExecutionService's
 	// OpenThread RPC.
 	ExecutionServiceOpenThreadProcedure = "/a8s.execution.v1.ExecutionService/OpenThread"
+	// ExecutionServiceListThreadsProcedure is the fully-qualified name of the ExecutionService's
+	// ListThreads RPC.
+	ExecutionServiceListThreadsProcedure = "/a8s.execution.v1.ExecutionService/ListThreads"
+	// ExecutionServiceReadThreadProcedure is the fully-qualified name of the ExecutionService's
+	// ReadThread RPC.
+	ExecutionServiceReadThreadProcedure = "/a8s.execution.v1.ExecutionService/ReadThread"
 	// ExecutionServiceSubmitInputProcedure is the fully-qualified name of the ExecutionService's
 	// SubmitInput RPC.
 	ExecutionServiceSubmitInputProcedure = "/a8s.execution.v1.ExecutionService/SubmitInput"
@@ -57,6 +63,8 @@ const (
 // ExecutionServiceClient is a client for the a8s.execution.v1.ExecutionService service.
 type ExecutionServiceClient interface {
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
+	ListThreads(context.Context, *connect.Request[v1.ListThreadsRequest]) (*connect.Response[v1.ListThreadsResponse], error)
+	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	SubmitInput(context.Context, *connect.Request[v1.SubmitInputRequest]) (*connect.Response[v1.SubmitInputResponse], error)
 	GetInputResult(context.Context, *connect.Request[v1.GetInputResultRequest]) (*connect.Response[v1.GetInputResultResponse], error)
 	Cancel(context.Context, *connect.Request[v1.CancelRequest]) (*connect.Response[v1.CancelResponse], error)
@@ -80,6 +88,18 @@ func NewExecutionServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			httpClient,
 			baseURL+ExecutionServiceOpenThreadProcedure,
 			connect.WithSchema(executionServiceMethods.ByName("OpenThread")),
+			connect.WithClientOptions(opts...),
+		),
+		listThreads: connect.NewClient[v1.ListThreadsRequest, v1.ListThreadsResponse](
+			httpClient,
+			baseURL+ExecutionServiceListThreadsProcedure,
+			connect.WithSchema(executionServiceMethods.ByName("ListThreads")),
+			connect.WithClientOptions(opts...),
+		),
+		readThread: connect.NewClient[v1.ReadThreadRequest, v1.ReadThreadResponse](
+			httpClient,
+			baseURL+ExecutionServiceReadThreadProcedure,
+			connect.WithSchema(executionServiceMethods.ByName("ReadThread")),
 			connect.WithClientOptions(opts...),
 		),
 		submitInput: connect.NewClient[v1.SubmitInputRequest, v1.SubmitInputResponse](
@@ -124,6 +144,8 @@ func NewExecutionServiceClient(httpClient connect.HTTPClient, baseURL string, op
 // executionServiceClient implements ExecutionServiceClient.
 type executionServiceClient struct {
 	openThread         *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
+	listThreads        *connect.Client[v1.ListThreadsRequest, v1.ListThreadsResponse]
+	readThread         *connect.Client[v1.ReadThreadRequest, v1.ReadThreadResponse]
 	submitInput        *connect.Client[v1.SubmitInputRequest, v1.SubmitInputResponse]
 	getInputResult     *connect.Client[v1.GetInputResultRequest, v1.GetInputResultResponse]
 	cancel             *connect.Client[v1.CancelRequest, v1.CancelResponse]
@@ -135,6 +157,16 @@ type executionServiceClient struct {
 // OpenThread calls a8s.execution.v1.ExecutionService.OpenThread.
 func (c *executionServiceClient) OpenThread(ctx context.Context, req *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error) {
 	return c.openThread.CallUnary(ctx, req)
+}
+
+// ListThreads calls a8s.execution.v1.ExecutionService.ListThreads.
+func (c *executionServiceClient) ListThreads(ctx context.Context, req *connect.Request[v1.ListThreadsRequest]) (*connect.Response[v1.ListThreadsResponse], error) {
+	return c.listThreads.CallUnary(ctx, req)
+}
+
+// ReadThread calls a8s.execution.v1.ExecutionService.ReadThread.
+func (c *executionServiceClient) ReadThread(ctx context.Context, req *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
+	return c.readThread.CallUnary(ctx, req)
 }
 
 // SubmitInput calls a8s.execution.v1.ExecutionService.SubmitInput.
@@ -170,6 +202,8 @@ func (c *executionServiceClient) Lookup(ctx context.Context, req *connect.Reques
 // ExecutionServiceHandler is an implementation of the a8s.execution.v1.ExecutionService service.
 type ExecutionServiceHandler interface {
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
+	ListThreads(context.Context, *connect.Request[v1.ListThreadsRequest]) (*connect.Response[v1.ListThreadsResponse], error)
+	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	SubmitInput(context.Context, *connect.Request[v1.SubmitInputRequest]) (*connect.Response[v1.SubmitInputResponse], error)
 	GetInputResult(context.Context, *connect.Request[v1.GetInputResultRequest]) (*connect.Response[v1.GetInputResultResponse], error)
 	Cancel(context.Context, *connect.Request[v1.CancelRequest]) (*connect.Response[v1.CancelResponse], error)
@@ -189,6 +223,18 @@ func NewExecutionServiceHandler(svc ExecutionServiceHandler, opts ...connect.Han
 		ExecutionServiceOpenThreadProcedure,
 		svc.OpenThread,
 		connect.WithSchema(executionServiceMethods.ByName("OpenThread")),
+		connect.WithHandlerOptions(opts...),
+	)
+	executionServiceListThreadsHandler := connect.NewUnaryHandler(
+		ExecutionServiceListThreadsProcedure,
+		svc.ListThreads,
+		connect.WithSchema(executionServiceMethods.ByName("ListThreads")),
+		connect.WithHandlerOptions(opts...),
+	)
+	executionServiceReadThreadHandler := connect.NewUnaryHandler(
+		ExecutionServiceReadThreadProcedure,
+		svc.ReadThread,
+		connect.WithSchema(executionServiceMethods.ByName("ReadThread")),
 		connect.WithHandlerOptions(opts...),
 	)
 	executionServiceSubmitInputHandler := connect.NewUnaryHandler(
@@ -231,6 +277,10 @@ func NewExecutionServiceHandler(svc ExecutionServiceHandler, opts ...connect.Han
 		switch r.URL.Path {
 		case ExecutionServiceOpenThreadProcedure:
 			executionServiceOpenThreadHandler.ServeHTTP(w, r)
+		case ExecutionServiceListThreadsProcedure:
+			executionServiceListThreadsHandler.ServeHTTP(w, r)
+		case ExecutionServiceReadThreadProcedure:
+			executionServiceReadThreadHandler.ServeHTTP(w, r)
 		case ExecutionServiceSubmitInputProcedure:
 			executionServiceSubmitInputHandler.ServeHTTP(w, r)
 		case ExecutionServiceGetInputResultProcedure:
@@ -254,6 +304,14 @@ type UnimplementedExecutionServiceHandler struct{}
 
 func (UnimplementedExecutionServiceHandler) OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("a8s.execution.v1.ExecutionService.OpenThread is not implemented"))
+}
+
+func (UnimplementedExecutionServiceHandler) ListThreads(context.Context, *connect.Request[v1.ListThreadsRequest]) (*connect.Response[v1.ListThreadsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("a8s.execution.v1.ExecutionService.ListThreads is not implemented"))
+}
+
+func (UnimplementedExecutionServiceHandler) ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("a8s.execution.v1.ExecutionService.ReadThread is not implemented"))
 }
 
 func (UnimplementedExecutionServiceHandler) SubmitInput(context.Context, *connect.Request[v1.SubmitInputRequest]) (*connect.Response[v1.SubmitInputResponse], error) {
