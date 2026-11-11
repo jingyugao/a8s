@@ -17,7 +17,7 @@ func desiredService(ref provider.ComputeReference) *core.Service {
 	yes := true
 	service := &core.Service{ObjectMeta: meta.ObjectMeta{Name: ref.ID, Namespace: ref.Namespace,
 		Labels: map[string]string{managedBy: "a8s"}, Annotations: map[string]string{intentKey: fingerprint(ref)},
-		OwnerReferences: []meta.OwnerReference{{APIVersion: "v1", Kind: "Pod", Name: ref.ID, UID: types.UID(ref.UID), Controller: &yes}}},
+		OwnerReferences: []meta.OwnerReference{{APIVersion: "v1", Kind: "Pod", Name: podName(ref), UID: types.UID(ref.UID), Controller: &yes}}},
 		Spec: core.ServiceSpec{Type: core.ServiceTypeClusterIP, Selector: map[string]string{"a8s.io/instance": ref.ID},
 			Ports: []core.ServicePort{{Name: "executor", Protocol: core.ProtocolTCP, Port: ref.Request.Environment.Port, TargetPort: intstr.FromInt32(ref.Request.Environment.Port)}}}}
 	if launch := ref.Request.Environment.Launch; launch != nil && launch.ControlPort != 0 {
@@ -30,7 +30,7 @@ func checkService(ref provider.ComputeReference, service *core.Service) error {
 	want := desiredService(ref)
 	owner := meta.GetControllerOf(service)
 	if service.Name != ref.ID || service.Namespace != ref.Namespace || service.Labels[managedBy] != "a8s" || service.Annotations[intentKey] != fingerprint(ref) ||
-		owner == nil || owner.UID != types.UID(ref.UID) || owner.Kind != "Pod" || owner.Name != ref.ID || owner.APIVersion != "v1" ||
+		owner == nil || owner.UID != types.UID(ref.UID) || owner.Kind != "Pod" || owner.Name != podName(ref) || owner.APIVersion != "v1" ||
 		service.Spec.Type != core.ServiceTypeClusterIP || !reflect.DeepEqual(service.Spec.Selector, want.Spec.Selector) || !reflect.DeepEqual(service.Spec.Ports, want.Spec.Ports) {
 		return fault(provider.Conflict, "ServiceIdentityMismatch", "Service ownership, selector or endpoint differs from the fixed Instance")
 	}
@@ -103,11 +103,19 @@ func (p *Provider) noOtherWriter(ctx context.Context, ref provider.ComputeRefere
 	}
 	for i := range pods.Items {
 		pod := &pods.Items[i]
-		if pod.Name == ref.ID {
+		if pod.Name == podName(ref) {
+			if ref.PodName != "" && string(pod.UID) == ref.UID && p.unclaimed(ctx, pod) == nil {
+				continue
+			}
 			if err := checkPod(ref, pod); err != nil {
 				return err
 			}
 			continue
+		}
+		if pod.Labels[poolLabel] != "" && pod.Annotations[claimKey] == "" {
+			if err := p.unclaimed(ctx, pod); err == nil {
+				continue
+			}
 		}
 		for _, volume := range pod.Spec.Volumes {
 			claim := volume.PersistentVolumeClaim

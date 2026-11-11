@@ -15,6 +15,8 @@ import socket
 import subprocess
 import time
 import tomllib
+import urllib.request
+import urllib.error
 from contextlib import contextmanager
 from decimal import ROUND_CEILING, Decimal
 from pathlib import Path
@@ -130,8 +132,17 @@ def idle_reclaim_policy(value):
     return policy
 
 
+def warm_pool_policy(value):
+    if not isinstance(value, dict) or set(value) - {"minReady"}:
+        raise ValueError("warmPool only supports minReady")
+    size = value.get("minReady", 0)
+    if type(size) is not int or not 0 <= size <= 100:
+        raise ValueError("warmPool.minReady must be an integer between 0 and 100")
+    return {"minReady": size}
+
+
 class Platform:
-    def __init__(self, manifest):
+    def __init__(self, manifest, *, capacity_only=False):
         self.agent = yaml.safe_load(manifest.read_text())
         allowed = {
             "apiVersion",
@@ -144,6 +155,7 @@ class Platform:
             "resources",
             "update",
             "idleReclaim",
+            "warmPool",
         }
         if not isinstance(self.agent, dict) or set(self.agent) - allowed:
             raise ValueError("AgentDeployment YAML 使用 a8s/v1，通过 runtimeClassRef 选择平台运行环境")
@@ -152,6 +164,7 @@ class Platform:
         if self.agent.get("kind") != "AgentDeployment":
             raise ValueError("kind 必须为 AgentDeployment")
         self.idle_reclaim = idle_reclaim_policy(self.agent.get("idleReclaim", {}))
+        self.warm_pool = warm_pool_policy(self.agent.get("warmPool", {}))
         self.name = self.agent.get("name", "")
         if not isinstance(self.name, str) or not re.fullmatch(r"[a-z][a-z0-9-]{0,39}", self.name):
             raise ValueError("name 使用小写字母开头，最多 40 个小写字母、数字或横线")
@@ -174,11 +187,11 @@ class Platform:
         self.base_image = self.runtime_class["image"]
         if self.runtime_class["name"] != class_name or self.runtime_class["harness"] != "codex":
             raise ValueError("runtime class 名称或 harness 不兼容")
-        if not re.search(r"@sha256:[a-f0-9]{64}$", self.base_image):
+        if not capacity_only and not re.search(r"@sha256:[a-f0-9]{64}$", self.base_image):
             raise ValueError("runtime class 尚未发布固定 digest 的平台镜像")
-        if revision and revision != self.base_image.split("@")[1]:
+        if not capacity_only and revision and revision != self.base_image.split("@")[1]:
             raise ValueError("指定的 runtime class revision 与平台目录不一致")
-        self.runtime_class_ref = class_name + "@" + self.base_image.split("@")[1]
+        self.runtime_class_ref = class_name + "@" + self.base_image.split("@")[-1]
         if self.agent.get("env", {}) != {}:
             raise ValueError("当前 Provider 尚不支持声明级 env；非秘密默认值请使用 Agentfile ENV")
         if self.agent.get("update", {"strategy": "restart"}) != {"strategy": "restart"}:
@@ -465,7 +478,7 @@ class Platform:
         combined = host.rstrip() + "\n\n" + mcp
         tomllib.loads(combined)  # Duplicate server names or malformed TOML fail before submission.
         intent = {
-            "agent": self.agent,
+            "agent": {key: value for key, value in self.agent.items() if key != "warmPool"},
             "image": self.image,
             "runtimeClassRef": self.runtime_class_ref,
             "hostConfig": combined,
@@ -513,6 +526,7 @@ class Platform:
                     "A8S_AGENT_IMAGE": self.image,
                     "A8S_AGENT_NAME": self.name,
                     "A8S_REGISTRY_PLAIN_HTTP": self.config["A8S_PLATFORM_REGISTRY_PLAIN_HTTP"],
+                    "A8S_HOST_CONFIG_DIGEST": "sha256:" + hashlib.sha256(combined.encode()).hexdigest(),
                 },
                 "secretRefs": ["a8s-server", "a8s-model"],
                 "configMap": f"{self.prefix}-host-config",
@@ -522,8 +536,35 @@ class Platform:
                 [
                     {"name": "A8S_EXEC_SERVER_URL", "value": "ws://127.0.0.1:8095"},
                     {"name": "A8S_SANDBOX_LAUNCH", "value": json.dumps(launch)},
+                    {"name": "A8S_WARM_POOL_CONFIG", "value": f"{self.prefix}-warm-pool"},
                 ]
             )
+        pool_launch = json.loads(json.dumps(launch))
+        pool_launch["environment"].update({
+            "A8S_IDLE_RECLAIM": json.dumps(self.idle_reclaim),
+            "A8S_PACKAGE_DIGEST": self.digest,
+        })
+        pool_spec = {
+            **self.warm_pool,
+            "scope": self.scope["tenantId"] + "/" + self.scope["projectId"],
+            "deploymentId": self.name,
+            "environment": {
+                "provider": "kubernetes", "image": self.base_image,
+                "revisionId": self.runtime_class["name"] + "-" + self.base_image.split(":")[-1][:12],
+                "platform": "linux/amd64", "cpu": float(self.cpu), "memoryMiB": self.memory_mib,
+                "port": 8095, "launch": pool_launch, "pool": f"{self.prefix}-warm-pool",
+            },
+            "workspace": {"id": self.workspace, "storageReference": f"{self.prefix}-a8s-workspace", "mountPath": self.working_dir},
+        }
+        self.pool_config = {
+            "apiVersion": "v1", "kind": "ConfigMap",
+            "metadata": {"name": f"{self.prefix}-warm-pool", "namespace": self.ns},
+            "data": {
+                "spec": json.dumps(pool_spec),
+                "manifest": json.dumps({key: value for key, value in self.agent.items() if key != "warmPool"}, sort_keys=True),
+            },
+        }
+        documents.append(self.pool_config)
         self.kubernetes = self.state / "kubernetes.yaml"
         self.kubernetes.write_text(yaml.safe_dump_all(documents, sort_keys=False, allow_unicode=True))
         image = {"reference": self.base_image, "digest": self.base_image.split("@")[1]}
@@ -575,6 +616,7 @@ class Platform:
             ("agentc", self.registration),
             ("runtime", self.runtime),
             ("deployment", self.create),
+            ("warm-pool", self.pool_config),
         ]:
             write_json(self.state / f"plan-{name}.json", value)
 
@@ -614,6 +656,43 @@ class Platform:
         write_json(self.state / "published-package.json", json.loads(output))
         return {"image": self.image, "package": self.package}
 
+    def pool_status(self):
+        request = urllib.request.Request(
+            self.endpoint + "/v1/warm-pool",
+            headers={"Authorization": "Bearer " + self.env["A8S_TOKEN"]},
+        )
+        with urllib.request.urlopen(request, timeout=15) as response:
+            return json.load(response)
+
+    def apply_pool(self):
+        server = json.loads(self.k("get", "deployment", f"{self.prefix}-a8s-server", "-o", "json"))
+        configured = {entry["name"]: entry.get("value") for entry in server["spec"]["template"]["spec"]["containers"][0]["env"]}
+        if configured.get("A8S_WARM_POOL_CONFIG") != self.pool_config["metadata"]["name"]:
+            if self.warm_pool["minReady"] == 0:
+                return False
+            raise RuntimeError("existing server does not support managed warm pools; workload replacement remains guarded")
+        self.k("apply", "-f", "-", data=yaml.safe_dump(self.pool_config))
+        return True
+
+    def resize_pool(self):
+        name = f"{self.prefix}-warm-pool"
+        config = json.loads(self.k("get", "configmap", name, "-o", "json"))
+        original = json.loads(config["data"]["manifest"])
+        requested = {key: value for key, value in self.agent.items() if key != "warmPool"}
+        if original != requested:
+            raise RuntimeError("update only supports warmPool capacity; Agent content, runtime and resource replacement remain guarded")
+        spec = json.loads(config["data"]["spec"])
+        self.base_image = spec["environment"]["image"]
+        spec["minReady"] = self.warm_pool["minReady"]
+        with self.connection():
+            current = self.api("deployment", "get", flags=["--id", self.name])
+            self.k("patch", "configmap", name, "--type=merge", "-p", json.dumps({
+                "metadata": {"resourceVersion": config["metadata"]["resourceVersion"]},
+                "data": {"spec": json.dumps(spec)},
+            }))
+            current["warmPool"] = self.pool_status()
+            return current
+
     def register(self):
         self.prepare()
         agentc = self.k("get", "statefulset", f"{self.prefix}-a8s-agentc", "--ignore-not-found", "-o", "json")
@@ -635,6 +714,8 @@ class Platform:
                     current_spec["idleReclaim"] = idle_reclaim_policy(current_spec.get("idleReclaim", {}))
                     if current_spec != self.create["spec"]:
                         raise RuntimeError("Agent 已存在且内容变化；当前安全更新尚未完成，原运行实例保持不变")
+                    if self.apply_pool():
+                        current["warmPool"] = self.pool_status()
                     return current
         registry_flags = ["--plain-http"] if self.config["A8S_PLATFORM_REGISTRY_PLAIN_HTTP"] == "true" else []
         self.cli_json("package", "resolve", "--ref", self.package, *registry_flags)
@@ -650,6 +731,14 @@ class Platform:
         with self.connection():
             self.api("agentc", "register", body=self.registration)
             self.api("runtime", "create", body=self.runtime)
+            deadline = time.monotonic() + 180
+            while self.warm_pool["minReady"] > 0:
+                status = self.pool_status()
+                if status["ready"] >= self.warm_pool["minReady"]:
+                    break
+                if time.monotonic() >= deadline:
+                    raise TimeoutError("warm pool did not become ready in 180 seconds; inspect Pod scheduling and image pulls")
+                time.sleep(1)
             return self.api(
                 "deployment",
                 "create",
@@ -659,14 +748,21 @@ class Platform:
 
     def status(self):
         with self.connection():
-            response = self.api("deployment", "get", flags=["--id", self.name])
-            operation = response["deployment"].get("operationId")
+            response = self.api("deployment", "get", flags=["--id", self.name], missing=True)
+            if response is None:
+                response = {"agent": self.name, "deployment": None}
+            operation = (response.get("deployment") or {}).get("operationId")
             if operation:
                 response["operation"] = self.api(
                     "operation",
                     "get",
                     flags=["--deployment", self.name, "--id", operation],
                 )["operation"]
+            try:
+                response["warmPool"] = self.pool_status()
+            except urllib.error.HTTPError as error:
+                if error.code != 404:
+                    raise
             return response
 
     def unregister(self):
@@ -701,6 +797,22 @@ class Platform:
                 )["operation"]
                 if operation["status"] != "OPERATION_STATUS_SUCCEEDED" or operation.get("cleanupPending"):
                     raise RuntimeError("原 Operation 尚未完成清理，保留资源")
+            pool_name = f"{self.prefix}-warm-pool"
+            raw_pool = self.k("get", "configmap", pool_name, "--ignore-not-found", "-o", "json")
+            if raw_pool:
+                config = json.loads(raw_pool)
+                spec = json.loads(config["data"]["spec"])
+                spec["minReady"] = 0
+                self.k("patch", "configmap", pool_name, "--type=merge", "-p", json.dumps({"data": {"spec": json.dumps(spec)}}))
+                deadline = time.monotonic() + 90
+                while True:
+                    pods = json.loads(self.k("get", "pods", "-l", "a8s.io/warm-pool=" + pool_name, "-o", "json"))["items"]
+                    free = [pod for pod in pods if not pod["metadata"].get("annotations", {}).get("a8s.io/pool-claim")]
+                    if not free:
+                        break
+                    if time.monotonic() >= deadline:
+                        raise TimeoutError("unclaimed pool Pods have not drained; supporting services retained")
+                    time.sleep(1)
             resources = [
                 f"{kind}/{self.prefix}-{suffix}"
                 for kind, suffix in [
@@ -712,6 +824,7 @@ class Platform:
                     ("role", "a8s-server"),
                     ("serviceaccount", "a8s-server"),
                     ("configmap", "host-config"),
+                    ("configmap", "warm-pool"),
                 ]
             ]
             self.k("delete", *resources, "--ignore-not-found", "--timeout=120s")
@@ -758,7 +871,7 @@ def main():
     if arguments.action == "runtime-publish":
         print(json.dumps(publish_runtime(arguments.file, arguments.image), ensure_ascii=False, indent=2))
         return
-    platform = Platform(arguments.file)
+    platform = Platform(arguments.file, capacity_only=arguments.action == "update")
     if arguments.action == "build":
         response = platform.build(arguments.context)
     elif arguments.action == "publish":
@@ -770,9 +883,9 @@ def main():
             "plan": str(platform.state),
             "submitted": False,
         }
-    elif arguments.action in ("create", "register", "apply", "update"):
-        if arguments.action == "update":
-            raise RuntimeError("当前安全更新未完成；请保留原 Agent，不能直接替换其工作负载")
+    elif arguments.action == "update":
+        response = platform.resize_pool()
+    elif arguments.action in ("create", "register", "apply"):
         response = platform.register()
     elif arguments.action == "status":
         response = platform.status()

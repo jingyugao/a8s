@@ -36,6 +36,7 @@ type Config struct {
 	Loader, Executable, Codex, Agentc         string
 	Environment                               []string
 	PlainHTTP                                 bool
+	ManagedOnly                               bool
 }
 
 type StartRequest struct {
@@ -346,6 +347,9 @@ func (m *Manager) Start(ctx context.Context, req StartRequest) (Snapshot, error)
 	m.op.Lock()
 	defer m.op.Unlock()
 	begin := time.Now()
+	if m.cfg.ManagedOnly && (!req.Managed || req.Binding == nil) {
+		return Snapshot{}, errors.New("pooled Guests accept only managed workspace bindings")
+	}
 	if !identifier.MatchString(req.WorkspaceID) || req.UID < 10000 || req.UID > 2147483647 || req.Generation == 0 || len(req.RequestKey) == 0 || len(req.RequestKey) > 128 {
 		return Snapshot{}, errors.New("workspace ID, dedicated UID >=10000, generation and requestKey are required")
 	}

@@ -26,6 +26,7 @@ import (
 type environmentAdapter struct {
 	provider  provider.Provider
 	mountPath string
+	pool      *native.WarmPool
 }
 
 var _ control.Environment = (*environmentAdapter)(nil)
@@ -49,6 +50,9 @@ func (e *environmentAdapter) Plan(ctx context.Context, action control.Action) (s
 		return "", api.NewError(v1.ErrorCategory_ERROR_CATEGORY_INVALID, "native Kubernetes requires an existing Workspace PVC")
 	}
 	request := provider.EnvironmentRequest{Image: releases.FixedReference(sandbox.Image), RevisionID: sandbox.EnvironmentRevision}
+	if e.pool != nil {
+		request.Pool = e.pool.Name
+	}
 	if raw := os.Getenv("A8S_SANDBOX_LAUNCH"); raw != "" {
 		launch := &provider.LaunchSpec{}
 		if err := json.Unmarshal([]byte(raw), launch); err != nil {
@@ -223,7 +227,11 @@ func newEnvironment(namespace, mountPath string) (*environmentAdapter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &environmentAdapter{provider: p, mountPath: mountPath}, nil
+	adapter := &environmentAdapter{provider: p, mountPath: mountPath}
+	if name := os.Getenv("A8S_WARM_POOL_CONFIG"); name != "" {
+		adapter.pool = &native.WarmPool{Provider: p, Name: name, Scope: api.ScopeKey(&v1.Scope{TenantId: os.Getenv("A8S_TENANT"), ProjectId: os.Getenv("A8S_PROJECT")})}
+	}
+	return adapter, nil
 }
 
 func dependencyError(err error) error {

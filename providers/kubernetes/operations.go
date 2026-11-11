@@ -38,7 +38,18 @@ func (p *Provider) InspectOperation(ctx context.Context, ref provider.OperationR
 	}
 	ctx, cancel := context.WithTimeout(ctx, p.config.Timeout)
 	defer cancel()
-	pod, err := p.config.Client.Pods(ref.Target.Namespace).Get(ctx, ref.Target.ID, meta.GetOptions{})
+	var err error
+	ref.Target, err = p.allocation(ctx, ref.Target)
+	if err != nil {
+		return op, err
+	}
+	if ref.Kind == provider.PrepareCompute && ref.Target.PodName != "" {
+		if err := p.claimAllocated(ctx, ref.Target); err != nil {
+			return op, wrap(err, false, "", ref.Target.ID)
+		}
+	}
+	op = operation(ref.Target, ref.Kind)
+	pod, err := p.config.Client.Pods(ref.Target.Namespace).Get(ctx, podName(ref.Target), meta.GetOptions{})
 	if apierrors.IsNotFound(err) && ref.Kind == provider.ReleaseCompute && ref.Target.UID != "" {
 		return p.released(ctx, ref.Target)
 	}
@@ -82,7 +93,7 @@ func (p *Provider) StopCompute(ctx context.Context, request provider.ComputeRequ
 	ctx, cancel := context.WithTimeout(ctx, p.config.Timeout)
 	defer cancel()
 	uid, version := types.UID(request.Target.UID), op.Observation.ResourceVersion
-	err = p.config.Client.Pods(request.Target.Namespace).Delete(ctx, request.Target.ID, meta.DeleteOptions{Preconditions: &meta.Preconditions{UID: &uid, ResourceVersion: &version}})
+	err = p.config.Client.Pods(request.Target.Namespace).Delete(ctx, podName(op.Reference.Target), meta.DeleteOptions{Preconditions: &meta.Preconditions{UID: &uid, ResourceVersion: &version}})
 	if err != nil {
 		return op, wrap(err, true, op.Reference.ID, request.Target.ID)
 	}
@@ -107,11 +118,11 @@ func (p *Provider) ReleaseCompute(ctx context.Context, request provider.ComputeR
 		return op, err
 	}
 	pods := p.config.Client.Pods(request.Target.Namespace)
-	pod, err := pods.Get(ctx, request.Target.ID, meta.GetOptions{})
+	pod, err := pods.Get(ctx, podName(op.Reference.Target), meta.GetOptions{})
 	if err != nil {
 		return op, unknown(err, op.Reference.ID, request.Target.ID)
 	}
-	if err := checkPod(request.Target, pod); err != nil {
+	if err := checkPod(op.Reference.Target, pod); err != nil {
 		return op, err
 	}
 	if pod.DeletionTimestamp == nil {

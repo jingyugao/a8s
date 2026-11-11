@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"crypto/subtle"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -168,6 +169,19 @@ func run(ctx context.Context, args []string) error {
 	}
 	mux := http.NewServeMux()
 	mux.Handle(path, authenticate(token, handler))
+	if environment, ok := dependencies.Environment.(*environmentAdapter); ok && environment.pool != nil {
+		mux.Handle("GET /v1/warm-pool", authenticate(token, http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			ctx, cancel := context.WithTimeout(req.Context(), 10*time.Second)
+			defer cancel()
+			status, err := environment.pool.Status(ctx)
+			if err != nil {
+				http.Error(w, "warm pool state unavailable", http.StatusServiceUnavailable)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(status)
+		})))
+	}
 	// Execution owns its tables, admission records and handlers. Assembly only
 	// supplies Control's read-only target, scoped authorization and remote Agentc.
 	executionDB := stdlib.OpenDBFromPool(pool)
@@ -207,6 +221,9 @@ func run(ctx context.Context, args []string) error {
 	controllerCtx, stopController := context.WithCancel(ctx)
 	defer stopController()
 	controllerDone := make(chan struct{})
+	if environment, ok := dependencies.Environment.(*environmentAdapter); ok && environment.pool != nil {
+		go environment.pool.Run(controllerCtx, func(err error) { slog.Error("warm pool reconcile failed", "error", err) })
+	}
 	reconciler := &controllers.Reconciler{Store: store, Scope: scope, Dependencies: dependencies, CallTimeout: 15 * time.Second}
 	go func() {
 		defer close(controllerDone)

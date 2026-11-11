@@ -18,7 +18,7 @@ help:
 	  'make create   Publish and create an AgentDeployment using fixed digests.' \
 	  'make plan     Resolve published content and write a plan; do not apply it.' \
 	  'make status   Inspect the AgentDeployment and its lifecycle operation.' \
-	  'make update   Guarded entry point; safe replacement is not yet available.' \
+	  'make update   Change warmPool capacity; workload replacement remains guarded.' \
 	  'make delete   Active agents are retained; an offline request is saved.' \
 	  '              Verified offline agents can release supporting services.' \
 	  'Requires a configured platform, Docker, kubectl, and uv.'

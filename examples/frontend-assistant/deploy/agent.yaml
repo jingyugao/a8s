@@ -9,6 +9,8 @@ resources:
   memory: 1Gi
 update:
   strategy: restart
+warmPool:
+  minReady: 1
 idleReclaim:
   # Keep running while MCP services, background work, or unknown activity remain.
   enabled: true

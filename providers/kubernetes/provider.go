@@ -70,8 +70,11 @@ func (p *Provider) ResolveEnvironment(_ context.Context, request provider.Enviro
 	if request.Platform != "" && request.Platform != "linux/amd64" && request.Platform != "linux/arm64" {
 		return provider.Environment{}, fault(provider.Unsupported, "UnsupportedPlatform", "native provider supports linux/amd64 or linux/arm64")
 	}
+	if request.Pool != "" && len(validation.IsDNS1123Subdomain(request.Pool)) != 0 {
+		return provider.Environment{}, fault(provider.Invalid, "InvalidPool", "valid pool configuration name is required")
+	}
 	return provider.Environment{Provider: "kubernetes", Image: request.Image, RevisionID: request.RevisionID,
-		Platform: request.Platform, CPU: request.CPU, MemoryMiB: request.MemoryMiB, Port: p.config.Port, Launch: request.Launch}, nil
+		Platform: request.Platform, CPU: request.CPU, MemoryMiB: request.MemoryMiB, Port: p.config.Port, Launch: request.Launch, Pool: request.Pool}, nil
 }
 
 func referenceID(request provider.PrepareRequest) string {
@@ -104,7 +107,7 @@ func (p *Provider) validate(ref provider.ComputeReference) error {
 		strings.IndexFunc(w.MountPath, func(c rune) bool { return c < 32 || c == 127 }) >= 0 {
 		return fault(provider.Invalid, "InvalidIntent", "persisted resource identity, existing PVC and clean absolute mount path are required")
 	}
-	resolved, err := p.ResolveEnvironment(context.Background(), provider.EnvironmentRequest{Image: e.Image, RevisionID: e.RevisionID, Platform: e.Platform, CPU: e.CPU, MemoryMiB: e.MemoryMiB, Launch: e.Launch})
+	resolved, err := p.ResolveEnvironment(context.Background(), provider.EnvironmentRequest{Image: e.Image, RevisionID: e.RevisionID, Platform: e.Platform, CPU: e.CPU, MemoryMiB: e.MemoryMiB, Launch: e.Launch, Pool: e.Pool})
 	if err != nil {
 		return err
 	}
@@ -114,7 +117,17 @@ func (p *Provider) validate(ref provider.ComputeReference) error {
 	if !reflect.DeepEqual(resolved, e) || e.Port < 1 || e.Port > 65535 || len(validation.IsDNS1123Label(ref.ID)) != 0 || ref.Namespace != p.config.Namespace || ref.ID != referenceID(ref.Request) || ref.StorageUID == "" || ref.Endpoint != endpoint(ref) {
 		return fault(provider.Conflict, "ReferenceMismatch", "compute reference differs from its immutable native Kubernetes intent")
 	}
+	if ref.PodName != "" && (e.Pool == "" || ref.UID == "" || len(validation.IsDNS1123Label(ref.PodName)) != 0) {
+		return fault(provider.Invalid, "InvalidPooledReference", "pooled Pod name, UID and pool identity must be persisted together")
+	}
 	return nil
+}
+
+func podName(ref provider.ComputeReference) string {
+	if ref.PodName != "" {
+		return ref.PodName
+	}
+	return ref.ID
 }
 
 func (p *Provider) Plan(ctx context.Context, request provider.PrepareRequest) (provider.ComputeReference, error) {
@@ -164,7 +177,7 @@ func desiredPod(ref provider.ComputeReference) *core.Pod {
 	if _, arch, ok := strings.Cut(e.Platform, "/"); ok {
 		selector["kubernetes.io/arch"] = arch
 	}
-	pod := &core.Pod{ObjectMeta: meta.ObjectMeta{Name: ref.ID, Namespace: ref.Namespace,
+	pod := &core.Pod{ObjectMeta: meta.ObjectMeta{Name: podName(ref), Namespace: ref.Namespace,
 		Labels: map[string]string{managedBy: "a8s", "a8s.io/instance": ref.ID}, Annotations: map[string]string{intentKey: fingerprint(ref)}, Finalizers: []string{finalizer}},
 		Spec: core.PodSpec{RestartPolicy: core.RestartPolicyNever, AutomountServiceAccountToken: &no, TerminationGracePeriodSeconds: &grace, NodeSelector: selector,
 			Volumes: []core.Volume{{Name: "workspace", VolumeSource: core.VolumeSource{PersistentVolumeClaim: &core.PersistentVolumeClaimVolumeSource{ClaimName: w.StorageReference}}}},
@@ -173,6 +186,12 @@ func desiredPod(ref provider.ComputeReference) *core.Pod {
 				VolumeMounts:   []core.VolumeMount{{Name: "workspace", MountPath: w.MountPath}},
 				ReadinessProbe: &core.Probe{ProbeHandler: core.ProbeHandler{TCPSocket: &core.TCPSocketAction{Port: intstr.FromInt32(e.Port)}}, PeriodSeconds: 2}}}}}
 	if launch := e.Launch; launch != nil {
+		if ref.PodName != "" {
+			copy := *launch
+			copy.Environment = warmEnvironment(launch.Environment)
+			copy.Environment["A8S_GUEST_SLOT"] = ref.PodName
+			launch = &copy
+		}
 		container := &pod.Spec.Containers[0]
 		if len(launch.Command) > 0 && launch.Command[0] == "/usr/local/bin/a8s-guest" {
 			root := int64(0)
@@ -210,7 +229,10 @@ func desiredPod(ref provider.ComputeReference) *core.Pod {
 
 func checkPod(ref provider.ComputeReference, pod *core.Pod) error {
 	want := desiredPod(ref)
-	if pod.UID == "" || pod.Name != ref.ID || pod.Namespace != ref.Namespace || ref.UID != "" && string(pod.UID) != ref.UID ||
+	if ref.PodName != "" && (pod.Annotations[claimKey] != ref.ID || pod.Labels[poolLabel] != ref.Request.Environment.Pool || pod.Annotations[poolStorageKey] != ref.StorageUID) {
+		return fault(provider.Conflict, "PoolClaimMissing", "pooled reference has no matching claim")
+	}
+	if pod.UID == "" || pod.Name != podName(ref) || pod.Namespace != ref.Namespace || ref.UID != "" && string(pod.UID) != ref.UID ||
 		pod.Labels[managedBy] != "a8s" || pod.Labels["a8s.io/instance"] != ref.ID || pod.Annotations[intentKey] != fingerprint(ref) || pod.Spec.RestartPolicy != core.RestartPolicyNever ||
 		len(pod.Spec.Containers) != 1 || len(pod.Spec.InitContainers) != 0 || len(pod.Spec.EphemeralContainers) != 0 {
 		return fault(provider.Conflict, "PodIdentityMismatch", "Pod UID, ownership or immutable intent differs from the requested Instance")
@@ -268,6 +290,14 @@ func (p *Provider) Prepare(ctx context.Context, ref provider.ComputeReference) (
 	}
 	ctx, cancel := context.WithTimeout(ctx, p.config.Timeout)
 	defer cancel()
+	if ref.Request.Environment.Pool != "" {
+		var err error
+		ref, err = p.allocate(ctx, ref)
+		if err != nil {
+			return op, wrap(err, false, "", ref.ID)
+		}
+		op = operation(ref, provider.PrepareCompute)
+	}
 	pvc, err := p.workspace(ctx, ref)
 	if err != nil {
 		return op, err
@@ -275,7 +305,7 @@ func (p *Provider) Prepare(ctx context.Context, ref provider.ComputeReference) (
 	if pvc.DeletionTimestamp != nil || pvc.Status.Phase == core.ClaimLost {
 		return op, fault(provider.NotReady, "WorkspaceUnavailable", "Workspace PVC is being deleted or lost")
 	}
-	pod, err := p.config.Client.Pods(ref.Namespace).Get(ctx, ref.ID, meta.GetOptions{})
+	pod, err := p.config.Client.Pods(ref.Namespace).Get(ctx, podName(ref), meta.GetOptions{})
 	if apierrors.IsNotFound(err) && ref.UID == "" {
 		if err := p.noOtherWriter(ctx, ref); err != nil {
 			return op, err
@@ -329,7 +359,11 @@ func (p *Provider) Inspect(ctx context.Context, ref provider.ComputeReference) (
 	}
 	ctx, cancel := context.WithTimeout(ctx, p.config.Timeout)
 	defer cancel()
-	pod, err := p.config.Client.Pods(ref.Namespace).Get(ctx, ref.ID, meta.GetOptions{})
+	ref, err := p.allocation(ctx, ref)
+	if err != nil {
+		return provider.Observation{}, err
+	}
+	pod, err := p.config.Client.Pods(ref.Namespace).Get(ctx, podName(ref), meta.GetOptions{})
 	if err != nil {
 		return provider.Observation{}, unknown(err, "", ref.ID)
 	}

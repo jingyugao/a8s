@@ -53,7 +53,7 @@ func run() error {
 			environment = append(environment, name+"="+value)
 		}
 	}
-	manager, err := guest.New(guest.Config{Root: *root, SlotID: os.Getenv("A8S_GUEST_SLOT"), AgentRoot: "/agent", Layout: "/opt/a8s/package", Image: os.Getenv("A8S_AGENT_IMAGE"), AgentName: os.Getenv("A8S_AGENT_NAME"), Loader: "/usr/local/bin/a8s-agent-loader", Executable: self, Codex: "/usr/local/bin/codex", Agentc: "/usr/local/bin/a8s-codex-agentc", Environment: environment, PlainHTTP: os.Getenv("A8S_REGISTRY_PLAIN_HTTP") == "true"})
+	manager, err := guest.New(guest.Config{Root: *root, SlotID: os.Getenv("A8S_GUEST_SLOT"), AgentRoot: "/agent", Layout: "/opt/a8s/package", Image: os.Getenv("A8S_AGENT_IMAGE"), AgentName: os.Getenv("A8S_AGENT_NAME"), Loader: "/usr/local/bin/a8s-agent-loader", Executable: self, Codex: "/usr/local/bin/codex", Agentc: "/usr/local/bin/a8s-codex-agentc", Environment: environment, PlainHTTP: os.Getenv("A8S_REGISTRY_PLAIN_HTTP") == "true", ManagedOnly: os.Getenv("A8S_GUEST_MANAGED_ONLY") == "true"})
 	if err != nil {
 		return err
 	}

@@ -43,6 +43,7 @@ type EnvironmentRequest struct {
 	CPU       float64     `json:"cpu,omitempty"`
 	MemoryMiB int64       `json:"memoryMiB,omitempty"`
 	Launch    *LaunchSpec `json:"launch,omitempty"`
+	Pool      string      `json:"pool,omitempty"`
 }
 
 // LaunchSpec is immutable, credential-free process configuration supplied by application assembly.
@@ -64,6 +65,7 @@ type Environment struct {
 	MemoryMiB  int64       `json:"memoryMiB,omitempty"`
 	Port       int32       `json:"port"`
 	Launch     *LaunchSpec `json:"launch,omitempty"`
+	Pool       string      `json:"pool,omitempty"`
 }
 
 // OperationContext identifies the host's persisted lifecycle intent.
@@ -96,6 +98,7 @@ type PrepareRequest struct {
 type ComputeReference struct {
 	ID         string         `json:"id"`
 	UID        string         `json:"uid,omitempty"`
+	PodName    string         `json:"podName,omitempty"`
 	Namespace  string         `json:"namespace"`
 	StorageUID string         `json:"storageUid"`
 	Endpoint   string         `json:"endpoint"`
