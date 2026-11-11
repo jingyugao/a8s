@@ -87,6 +87,9 @@ func (s *server) Stop(c context.Context, q *connect.Request[v1.StopRequest]) (*c
 func (s *server) OpenThread(c context.Context, q *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error) {
 	return unary(c, s.timeout, q, s.agent.OpenThread)
 }
+func (s *server) ReadThread(c context.Context, q *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
+	return unary(c, s.timeout, q, s.agent.ReadThread)
+}
 func (s *server) SubmitInput(c context.Context, q *connect.Request[v1.SubmitInputRequest]) (*connect.Response[v1.SubmitInputResponse], error) {
 	return unary(c, s.timeout, q, s.agent.SubmitInput)
 }
@@ -146,6 +149,9 @@ func (c *Client) Stop(x context.Context, q *v1.StopRequest) (*v1.StopResponse, e
 }
 func (c *Client) OpenThread(x context.Context, q *v1.OpenThreadRequest) (*v1.OpenThreadResponse, error) {
 	return remote(x, c.timeout, q, c.rpc.OpenThread)
+}
+func (c *Client) ReadThread(x context.Context, q *v1.ReadThreadRequest) (*v1.ReadThreadResponse, error) {
+	return remote(x, c.timeout, q, c.rpc.ReadThread)
 }
 func (c *Client) SubmitInput(x context.Context, q *v1.SubmitInputRequest) (*v1.SubmitInputResponse, error) {
 	return remote(x, c.timeout, q, c.rpc.SubmitInput)

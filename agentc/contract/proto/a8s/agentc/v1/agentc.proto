@@ -55,6 +55,22 @@ message StopResponse {
 }
 message OpenThreadRequest { Binding binding = 1; string request_id = 2; }
 message OpenThreadResponse { string thread_id = 1; }
+message ThreadMessage {
+  string role = 1;
+  string text = 2;
+  string turn_id = 3;
+  string request_id = 4;
+}
+message ReadThreadRequest {
+  Binding binding = 1;
+  string thread_id = 2;
+  string before_turn_id = 3;
+  uint32 page_size = 4;
+}
+message ReadThreadResponse {
+  repeated ThreadMessage messages = 1;
+  string next_before_turn_id = 2;
+}
 message SubmitInputRequest {
   Binding binding = 1;
   string request_id = 2;
@@ -115,6 +131,7 @@ service AgentcService {
   rpc Drain(DrainRequest) returns (DrainResponse);
   rpc Stop(StopRequest) returns (StopResponse);
   rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
+  rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
   rpc SubmitInput(SubmitInputRequest) returns (SubmitInputResponse);
   rpc GetInputResult(GetInputResultRequest) returns (GetInputResultResponse);
   rpc Cancel(CancelRequest) returns (CancelResponse);

@@ -110,3 +110,24 @@ func (s *ExecutionSQL) HasThread(ctx context.Context, r execution.Resource) (boo
 	err := s.DB.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM a8s_execution_threads WHERE scope=$1 AND deployment_id=$2 AND workspace_id=$3 AND thread_id=$4)", r.Scope, r.DeploymentID, r.WorkspaceID, r.ThreadID).Scan(&found)
 	return found, err
 }
+
+func (s *ExecutionSQL) Thread(ctx context.Context, r execution.Resource) (execution.Record, error) {
+	return scanExecution(s.DB.QueryRowContext(ctx, "SELECT "+executionColumns+" FROM a8s_execution_requests WHERE scope=$1 AND deployment_id=$2 AND workspace_id=$3 AND request_id=(SELECT open_request_id FROM a8s_execution_threads WHERE scope=$1 AND deployment_id=$2 AND workspace_id=$3 AND thread_id=$4)", r.Scope, r.DeploymentID, r.WorkspaceID, r.ThreadID))
+}
+
+func (s *ExecutionSQL) ListThreads(ctx context.Context, r execution.Resource, before string, limit int) ([]execution.Record, error) {
+	rows, err := s.DB.QueryContext(ctx, "SELECT "+executionColumns+" FROM a8s_execution_requests WHERE scope=$1 AND deployment_id=$2 AND workspace_id=$3 AND request_id IN (SELECT open_request_id FROM a8s_execution_threads WHERE scope=$1 AND deployment_id=$2 AND workspace_id=$3) AND ($4='' OR (created_at,request_id) < (SELECT created_at,request_id FROM a8s_execution_requests WHERE scope=$1 AND deployment_id=$2 AND workspace_id=$3 AND request_id=$4)) ORDER BY created_at DESC,request_id DESC LIMIT $5", r.Scope, r.DeploymentID, r.WorkspaceID, before, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var records []execution.Record
+	for rows.Next() {
+		record, err := scanExecution(rows)
+		if err != nil {
+			return nil, err
+		}
+		records = append(records, record)
+	}
+	return records, rows.Err()
+}

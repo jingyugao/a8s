@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	"connectrpc.com/connect"
 	"github.com/jingyugao/a8s/agentc/contract"
@@ -48,6 +49,26 @@ func (h *Handler) OpenThread(ctx context.Context, q *connect.Request[v1.OpenThre
 		return nil, publicError(err)
 	}
 	return connect.NewResponse(&v1.OpenThreadResponse{Record: record(r)}), nil
+}
+
+func (h *Handler) ListThreads(ctx context.Context, q *connect.Request[v1.ListThreadsRequest]) (*connect.Response[v1.ListThreadsResponse], error) {
+	records, next, err := h.Gateway.ListThreads(ctx, resource(q.Msg.Resource), q.Msg.PageToken, int(q.Msg.PageSize))
+	if err != nil {
+		return nil, publicError(err)
+	}
+	response := &v1.ListThreadsResponse{NextPageToken: next}
+	for _, r := range records {
+		response.Threads = append(response.Threads, &v1.ThreadSummary{ThreadId: r.Resource.ThreadID, CreatedAt: r.CreatedAt.UTC().Format(time.RFC3339)})
+	}
+	return connect.NewResponse(response), nil
+}
+
+func (h *Handler) ReadThread(ctx context.Context, q *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
+	result, err := h.Gateway.ReadThread(ctx, resource(q.Msg.Resource), q.Msg.BeforeTurnId, q.Msg.PageSize)
+	if err != nil {
+		return nil, publicError(err)
+	}
+	return connect.NewResponse(&v1.ReadThreadResponse{Messages: result.Messages, NextBeforeTurnId: result.NextBeforeTurnId}), nil
 }
 func (h *Handler) SubmitInput(ctx context.Context, q *connect.Request[v1.SubmitInputRequest]) (*connect.Response[v1.SubmitInputResponse], error) {
 	r, err := h.Gateway.SubmitInput(ctx, SubmitRequest{Resource: resource(q.Msg.Resource), RequestKey: q.Msg.RequestKey, Text: q.Msg.Text, AuthorID: q.Msg.AuthorId})

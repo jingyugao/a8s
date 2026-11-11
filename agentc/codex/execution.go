@@ -14,7 +14,10 @@ import (
 	"github.com/jingyugao/a8s/agentc/state"
 )
 
-type nativeItem struct{ Type, ID, ClientID, Text string }
+type nativeItem struct {
+	Type, ID, ClientID, Text string
+	Content                  []struct{ Type, Text string }
+}
 type nativeTurn struct {
 	ID, Status string
 	Items      []nativeItem

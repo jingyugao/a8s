@@ -65,6 +65,8 @@ type Store interface {
 	Claim(context.Context, Record) (Record, bool, error)
 	Save(context.Context, Record, int64) (Record, error)
 	HasThread(context.Context, Resource) (bool, error)
+	Thread(context.Context, Resource) (Record, error)
+	ListThreads(context.Context, Resource, string, int) ([]Record, error)
 }
 
 var ErrNotFound = errors.New("execution record not found")

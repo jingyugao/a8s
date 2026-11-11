@@ -12,6 +12,11 @@ message Record {
 }
 message OpenThreadRequest { Resource resource = 1; string request_key = 2; }
 message OpenThreadResponse { Record record = 1; }
+message ThreadSummary { string thread_id = 1; string created_at = 2; }
+message ListThreadsRequest { Resource resource = 1; uint32 page_size = 2; string page_token = 3; }
+message ListThreadsResponse { repeated ThreadSummary threads = 1; string next_page_token = 2; }
+message ReadThreadRequest { Resource resource = 1; string before_turn_id = 2; uint32 page_size = 3; }
+message ReadThreadResponse { repeated a8s.agentc.v1.ThreadMessage messages = 1; string next_before_turn_id = 2; }
 message SubmitInputRequest { Resource resource = 1; string request_key = 2; string text = 3; string author_id = 4; }
 message SubmitInputResponse { Record record = 1; }
 message GetInputResultRequest { Resource resource = 1; string request_id = 2; }
@@ -26,6 +31,8 @@ message LookupRequest { Resource resource = 1; string kind = 2; string request_k
 message LookupResponse { Record record = 1; }
 service ExecutionService {
   rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
+  rpc ListThreads(ListThreadsRequest) returns (ListThreadsResponse);
+  rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
   rpc SubmitInput(SubmitInputRequest) returns (SubmitInputResponse);
   rpc GetInputResult(GetInputResultRequest) returns (GetInputResultResponse);
   rpc Cancel(CancelRequest) returns (CancelResponse);

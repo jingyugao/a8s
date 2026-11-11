@@ -847,6 +847,194 @@ func (x *OpenThreadResponse) GetThreadId() string {
 	return ""
 }
 
+type ThreadMessage struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Role          string                 `protobuf:"bytes,1,opt,name=role,proto3" json:"role,omitempty"`
+	Text          string                 `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
+	TurnId        string                 `protobuf:"bytes,3,opt,name=turn_id,json=turnId,proto3" json:"turn_id,omitempty"`
+	RequestId     string                 `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ThreadMessage) Reset() {
+	*x = ThreadMessage{}
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ThreadMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ThreadMessage) ProtoMessage() {}
+
+func (x *ThreadMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ThreadMessage.ProtoReflect.Descriptor instead.
+func (*ThreadMessage) Descriptor() ([]byte, []int) {
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ThreadMessage) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+func (x *ThreadMessage) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+func (x *ThreadMessage) GetTurnId() string {
+	if x != nil {
+		return x.TurnId
+	}
+	return ""
+}
+
+func (x *ThreadMessage) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+type ReadThreadRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Binding       *Binding               `protobuf:"bytes,1,opt,name=binding,proto3" json:"binding,omitempty"`
+	ThreadId      string                 `protobuf:"bytes,2,opt,name=thread_id,json=threadId,proto3" json:"thread_id,omitempty"`
+	BeforeTurnId  string                 `protobuf:"bytes,3,opt,name=before_turn_id,json=beforeTurnId,proto3" json:"before_turn_id,omitempty"`
+	PageSize      uint32                 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReadThreadRequest) Reset() {
+	*x = ReadThreadRequest{}
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReadThreadRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReadThreadRequest) ProtoMessage() {}
+
+func (x *ReadThreadRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReadThreadRequest.ProtoReflect.Descriptor instead.
+func (*ReadThreadRequest) Descriptor() ([]byte, []int) {
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *ReadThreadRequest) GetBinding() *Binding {
+	if x != nil {
+		return x.Binding
+	}
+	return nil
+}
+
+func (x *ReadThreadRequest) GetThreadId() string {
+	if x != nil {
+		return x.ThreadId
+	}
+	return ""
+}
+
+func (x *ReadThreadRequest) GetBeforeTurnId() string {
+	if x != nil {
+		return x.BeforeTurnId
+	}
+	return ""
+}
+
+func (x *ReadThreadRequest) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type ReadThreadResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Messages         []*ThreadMessage       `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
+	NextBeforeTurnId string                 `protobuf:"bytes,2,opt,name=next_before_turn_id,json=nextBeforeTurnId,proto3" json:"next_before_turn_id,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ReadThreadResponse) Reset() {
+	*x = ReadThreadResponse{}
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReadThreadResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReadThreadResponse) ProtoMessage() {}
+
+func (x *ReadThreadResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReadThreadResponse.ProtoReflect.Descriptor instead.
+func (*ReadThreadResponse) Descriptor() ([]byte, []int) {
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *ReadThreadResponse) GetMessages() []*ThreadMessage {
+	if x != nil {
+		return x.Messages
+	}
+	return nil
+}
+
+func (x *ReadThreadResponse) GetNextBeforeTurnId() string {
+	if x != nil {
+		return x.NextBeforeTurnId
+	}
+	return ""
+}
+
 type SubmitInputRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Binding       *Binding               `protobuf:"bytes,1,opt,name=binding,proto3" json:"binding,omitempty"`
@@ -860,7 +1048,7 @@ type SubmitInputRequest struct {
 
 func (x *SubmitInputRequest) Reset() {
 	*x = SubmitInputRequest{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[14]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -872,7 +1060,7 @@ func (x *SubmitInputRequest) String() string {
 func (*SubmitInputRequest) ProtoMessage() {}
 
 func (x *SubmitInputRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[14]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -885,7 +1073,7 @@ func (x *SubmitInputRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitInputRequest.ProtoReflect.Descriptor instead.
 func (*SubmitInputRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{14}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *SubmitInputRequest) GetBinding() *Binding {
@@ -932,7 +1120,7 @@ type SubmitInputResponse struct {
 
 func (x *SubmitInputResponse) Reset() {
 	*x = SubmitInputResponse{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[15]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -944,7 +1132,7 @@ func (x *SubmitInputResponse) String() string {
 func (*SubmitInputResponse) ProtoMessage() {}
 
 func (x *SubmitInputResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[15]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -957,7 +1145,7 @@ func (x *SubmitInputResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitInputResponse.ProtoReflect.Descriptor instead.
 func (*SubmitInputResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{15}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *SubmitInputResponse) GetResult() *InputResult {
@@ -979,7 +1167,7 @@ type GetInputResultRequest struct {
 
 func (x *GetInputResultRequest) Reset() {
 	*x = GetInputResultRequest{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[16]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -991,7 +1179,7 @@ func (x *GetInputResultRequest) String() string {
 func (*GetInputResultRequest) ProtoMessage() {}
 
 func (x *GetInputResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[16]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1004,7 +1192,7 @@ func (x *GetInputResultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInputResultRequest.ProtoReflect.Descriptor instead.
 func (*GetInputResultRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{16}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *GetInputResultRequest) GetBinding() *Binding {
@@ -1044,7 +1232,7 @@ type GetInputResultResponse struct {
 
 func (x *GetInputResultResponse) Reset() {
 	*x = GetInputResultResponse{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[17]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1056,7 +1244,7 @@ func (x *GetInputResultResponse) String() string {
 func (*GetInputResultResponse) ProtoMessage() {}
 
 func (x *GetInputResultResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[17]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1069,7 +1257,7 @@ func (x *GetInputResultResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInputResultResponse.ProtoReflect.Descriptor instead.
 func (*GetInputResultResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{17}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *GetInputResultResponse) GetResult() *InputResult {
@@ -1094,7 +1282,7 @@ type InputResult struct {
 
 func (x *InputResult) Reset() {
 	*x = InputResult{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[18]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1106,7 +1294,7 @@ func (x *InputResult) String() string {
 func (*InputResult) ProtoMessage() {}
 
 func (x *InputResult) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[18]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1119,7 +1307,7 @@ func (x *InputResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InputResult.ProtoReflect.Descriptor instead.
 func (*InputResult) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{18}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *InputResult) GetRequestId() string {
@@ -1176,7 +1364,7 @@ type CancelRequest struct {
 
 func (x *CancelRequest) Reset() {
 	*x = CancelRequest{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[19]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1188,7 +1376,7 @@ func (x *CancelRequest) String() string {
 func (*CancelRequest) ProtoMessage() {}
 
 func (x *CancelRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[19]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1201,7 +1389,7 @@ func (x *CancelRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelRequest.ProtoReflect.Descriptor instead.
 func (*CancelRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{19}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *CancelRequest) GetBinding() *Binding {
@@ -1242,7 +1430,7 @@ type CancelResponse struct {
 
 func (x *CancelResponse) Reset() {
 	*x = CancelResponse{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[20]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1254,7 +1442,7 @@ func (x *CancelResponse) String() string {
 func (*CancelResponse) ProtoMessage() {}
 
 func (x *CancelResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[20]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1267,7 +1455,7 @@ func (x *CancelResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelResponse.ProtoReflect.Descriptor instead.
 func (*CancelResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{20}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *CancelResponse) GetAccepted() bool {
@@ -1299,7 +1487,7 @@ type RespondInteractionRequest struct {
 
 func (x *RespondInteractionRequest) Reset() {
 	*x = RespondInteractionRequest{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[21]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1311,7 +1499,7 @@ func (x *RespondInteractionRequest) String() string {
 func (*RespondInteractionRequest) ProtoMessage() {}
 
 func (x *RespondInteractionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[21]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1324,7 +1512,7 @@ func (x *RespondInteractionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RespondInteractionRequest.ProtoReflect.Descriptor instead.
 func (*RespondInteractionRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{21}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *RespondInteractionRequest) GetBinding() *Binding {
@@ -1378,7 +1566,7 @@ type RespondInteractionResponse struct {
 
 func (x *RespondInteractionResponse) Reset() {
 	*x = RespondInteractionResponse{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[22]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1390,7 +1578,7 @@ func (x *RespondInteractionResponse) String() string {
 func (*RespondInteractionResponse) ProtoMessage() {}
 
 func (x *RespondInteractionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[22]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1403,7 +1591,7 @@ func (x *RespondInteractionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RespondInteractionResponse.ProtoReflect.Descriptor instead.
 func (*RespondInteractionResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{22}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *RespondInteractionResponse) GetAccepted() bool {
@@ -1423,7 +1611,7 @@ type SubscribeRequest struct {
 
 func (x *SubscribeRequest) Reset() {
 	*x = SubscribeRequest{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[23]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1435,7 +1623,7 @@ func (x *SubscribeRequest) String() string {
 func (*SubscribeRequest) ProtoMessage() {}
 
 func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[23]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1448,7 +1636,7 @@ func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeRequest.ProtoReflect.Descriptor instead.
 func (*SubscribeRequest) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{23}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *SubscribeRequest) GetBinding() *Binding {
@@ -1481,7 +1669,7 @@ type SubscribeResponse struct {
 
 func (x *SubscribeResponse) Reset() {
 	*x = SubscribeResponse{}
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[24]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1493,7 +1681,7 @@ func (x *SubscribeResponse) String() string {
 func (*SubscribeResponse) ProtoMessage() {}
 
 func (x *SubscribeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[24]
+	mi := &file_a8s_agentc_v1_agentc_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1506,7 +1694,7 @@ func (x *SubscribeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeResponse.ProtoReflect.Descriptor instead.
 func (*SubscribeResponse) Descriptor() ([]byte, []int) {
-	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{24}
+	return file_a8s_agentc_v1_agentc_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *SubscribeResponse) GetEventId() string {
@@ -1624,7 +1812,21 @@ const file_a8s_agentc_v1_agentc_proto_rawDesc = "" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\"1\n" +
 	"\x12OpenThreadResponse\x12\x1b\n" +
-	"\tthread_id\x18\x01 \x01(\tR\bthreadId\"\xb3\x01\n" +
+	"\tthread_id\x18\x01 \x01(\tR\bthreadId\"o\n" +
+	"\rThreadMessage\x12\x12\n" +
+	"\x04role\x18\x01 \x01(\tR\x04role\x12\x12\n" +
+	"\x04text\x18\x02 \x01(\tR\x04text\x12\x17\n" +
+	"\aturn_id\x18\x03 \x01(\tR\x06turnId\x12\x1d\n" +
+	"\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xa5\x01\n" +
+	"\x11ReadThreadRequest\x120\n" +
+	"\abinding\x18\x01 \x01(\v2\x16.a8s.agentc.v1.BindingR\abinding\x12\x1b\n" +
+	"\tthread_id\x18\x02 \x01(\tR\bthreadId\x12$\n" +
+	"\x0ebefore_turn_id\x18\x03 \x01(\tR\fbeforeTurnId\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\rR\bpageSize\"}\n" +
+	"\x12ReadThreadResponse\x128\n" +
+	"\bmessages\x18\x01 \x03(\v2\x1c.a8s.agentc.v1.ThreadMessageR\bmessages\x12-\n" +
+	"\x13next_before_turn_id\x18\x02 \x01(\tR\x10nextBeforeTurnId\"\xb3\x01\n" +
 	"\x12SubmitInputRequest\x120\n" +
 	"\abinding\x18\x01 \x01(\v2\x16.a8s.agentc.v1.BindingR\abinding\x12\x1d\n" +
 	"\n" +
@@ -1680,7 +1882,7 @@ const file_a8s_agentc_v1_agentc_proto_rawDesc = "" +
 	"\x04type\x18\x04 \x01(\tR\x04type\x12\x12\n" +
 	"\x04text\x18\x05 \x01(\tR\x04text\x12%\n" +
 	"\x0einteraction_id\x18\x06 \x01(\tR\rinteractionId\x12)\n" +
-	"\x10interaction_kind\x18\a \x01(\tR\x0finteractionKind2\x8d\a\n" +
+	"\x10interaction_kind\x18\a \x01(\tR\x0finteractionKind2\xe0\a\n" +
 	"\rAgentcService\x12H\n" +
 	"\aPrepare\x12\x1d.a8s.agentc.v1.PrepareRequest\x1a\x1e.a8s.agentc.v1.PrepareResponse\x12H\n" +
 	"\aInspect\x12\x1d.a8s.agentc.v1.InspectRequest\x1a\x1e.a8s.agentc.v1.InspectResponse\x12W\n" +
@@ -1688,7 +1890,9 @@ const file_a8s_agentc_v1_agentc_proto_rawDesc = "" +
 	"\x05Drain\x12\x1b.a8s.agentc.v1.DrainRequest\x1a\x1c.a8s.agentc.v1.DrainResponse\x12?\n" +
 	"\x04Stop\x12\x1a.a8s.agentc.v1.StopRequest\x1a\x1b.a8s.agentc.v1.StopResponse\x12Q\n" +
 	"\n" +
-	"OpenThread\x12 .a8s.agentc.v1.OpenThreadRequest\x1a!.a8s.agentc.v1.OpenThreadResponse\x12T\n" +
+	"OpenThread\x12 .a8s.agentc.v1.OpenThreadRequest\x1a!.a8s.agentc.v1.OpenThreadResponse\x12Q\n" +
+	"\n" +
+	"ReadThread\x12 .a8s.agentc.v1.ReadThreadRequest\x1a!.a8s.agentc.v1.ReadThreadResponse\x12T\n" +
 	"\vSubmitInput\x12!.a8s.agentc.v1.SubmitInputRequest\x1a\".a8s.agentc.v1.SubmitInputResponse\x12]\n" +
 	"\x0eGetInputResult\x12$.a8s.agentc.v1.GetInputResultRequest\x1a%.a8s.agentc.v1.GetInputResultResponse\x12E\n" +
 	"\x06Cancel\x12\x1c.a8s.agentc.v1.CancelRequest\x1a\x1d.a8s.agentc.v1.CancelResponse\x12i\n" +
@@ -1707,7 +1911,7 @@ func file_a8s_agentc_v1_agentc_proto_rawDescGZIP() []byte {
 	return file_a8s_agentc_v1_agentc_proto_rawDescData
 }
 
-var file_a8s_agentc_v1_agentc_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_a8s_agentc_v1_agentc_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_a8s_agentc_v1_agentc_proto_goTypes = []any{
 	(*Binding)(nil),                    // 0: a8s.agentc.v1.Binding
 	(*PrepareRequest)(nil),             // 1: a8s.agentc.v1.PrepareRequest
@@ -1723,24 +1927,27 @@ var file_a8s_agentc_v1_agentc_proto_goTypes = []any{
 	(*StopResponse)(nil),               // 11: a8s.agentc.v1.StopResponse
 	(*OpenThreadRequest)(nil),          // 12: a8s.agentc.v1.OpenThreadRequest
 	(*OpenThreadResponse)(nil),         // 13: a8s.agentc.v1.OpenThreadResponse
-	(*SubmitInputRequest)(nil),         // 14: a8s.agentc.v1.SubmitInputRequest
-	(*SubmitInputResponse)(nil),        // 15: a8s.agentc.v1.SubmitInputResponse
-	(*GetInputResultRequest)(nil),      // 16: a8s.agentc.v1.GetInputResultRequest
-	(*GetInputResultResponse)(nil),     // 17: a8s.agentc.v1.GetInputResultResponse
-	(*InputResult)(nil),                // 18: a8s.agentc.v1.InputResult
-	(*CancelRequest)(nil),              // 19: a8s.agentc.v1.CancelRequest
-	(*CancelResponse)(nil),             // 20: a8s.agentc.v1.CancelResponse
-	(*RespondInteractionRequest)(nil),  // 21: a8s.agentc.v1.RespondInteractionRequest
-	(*RespondInteractionResponse)(nil), // 22: a8s.agentc.v1.RespondInteractionResponse
-	(*SubscribeRequest)(nil),           // 23: a8s.agentc.v1.SubscribeRequest
-	(*SubscribeResponse)(nil),          // 24: a8s.agentc.v1.SubscribeResponse
-	nil,                                // 25: a8s.agentc.v1.Ready.CapabilitiesEntry
+	(*ThreadMessage)(nil),              // 14: a8s.agentc.v1.ThreadMessage
+	(*ReadThreadRequest)(nil),          // 15: a8s.agentc.v1.ReadThreadRequest
+	(*ReadThreadResponse)(nil),         // 16: a8s.agentc.v1.ReadThreadResponse
+	(*SubmitInputRequest)(nil),         // 17: a8s.agentc.v1.SubmitInputRequest
+	(*SubmitInputResponse)(nil),        // 18: a8s.agentc.v1.SubmitInputResponse
+	(*GetInputResultRequest)(nil),      // 19: a8s.agentc.v1.GetInputResultRequest
+	(*GetInputResultResponse)(nil),     // 20: a8s.agentc.v1.GetInputResultResponse
+	(*InputResult)(nil),                // 21: a8s.agentc.v1.InputResult
+	(*CancelRequest)(nil),              // 22: a8s.agentc.v1.CancelRequest
+	(*CancelResponse)(nil),             // 23: a8s.agentc.v1.CancelResponse
+	(*RespondInteractionRequest)(nil),  // 24: a8s.agentc.v1.RespondInteractionRequest
+	(*RespondInteractionResponse)(nil), // 25: a8s.agentc.v1.RespondInteractionResponse
+	(*SubscribeRequest)(nil),           // 26: a8s.agentc.v1.SubscribeRequest
+	(*SubscribeResponse)(nil),          // 27: a8s.agentc.v1.SubscribeResponse
+	nil,                                // 28: a8s.agentc.v1.Ready.CapabilitiesEntry
 }
 var file_a8s_agentc_v1_agentc_proto_depIdxs = []int32{
 	0,  // 0: a8s.agentc.v1.PrepareRequest.binding:type_name -> a8s.agentc.v1.Binding
 	3,  // 1: a8s.agentc.v1.PrepareResponse.ready:type_name -> a8s.agentc.v1.Ready
 	0,  // 2: a8s.agentc.v1.Ready.binding:type_name -> a8s.agentc.v1.Binding
-	25, // 3: a8s.agentc.v1.Ready.capabilities:type_name -> a8s.agentc.v1.Ready.CapabilitiesEntry
+	28, // 3: a8s.agentc.v1.Ready.capabilities:type_name -> a8s.agentc.v1.Ready.CapabilitiesEntry
 	0,  // 4: a8s.agentc.v1.InspectRequest.binding:type_name -> a8s.agentc.v1.Binding
 	3,  // 5: a8s.agentc.v1.InspectResponse.ready:type_name -> a8s.agentc.v1.Ready
 	0,  // 6: a8s.agentc.v1.SetAdmissionRequest.binding:type_name -> a8s.agentc.v1.Binding
@@ -1748,40 +1955,44 @@ var file_a8s_agentc_v1_agentc_proto_depIdxs = []int32{
 	0,  // 8: a8s.agentc.v1.DrainRequest.binding:type_name -> a8s.agentc.v1.Binding
 	0,  // 9: a8s.agentc.v1.StopRequest.binding:type_name -> a8s.agentc.v1.Binding
 	0,  // 10: a8s.agentc.v1.OpenThreadRequest.binding:type_name -> a8s.agentc.v1.Binding
-	0,  // 11: a8s.agentc.v1.SubmitInputRequest.binding:type_name -> a8s.agentc.v1.Binding
-	18, // 12: a8s.agentc.v1.SubmitInputResponse.result:type_name -> a8s.agentc.v1.InputResult
-	0,  // 13: a8s.agentc.v1.GetInputResultRequest.binding:type_name -> a8s.agentc.v1.Binding
-	18, // 14: a8s.agentc.v1.GetInputResultResponse.result:type_name -> a8s.agentc.v1.InputResult
-	0,  // 15: a8s.agentc.v1.CancelRequest.binding:type_name -> a8s.agentc.v1.Binding
-	0,  // 16: a8s.agentc.v1.RespondInteractionRequest.binding:type_name -> a8s.agentc.v1.Binding
-	0,  // 17: a8s.agentc.v1.SubscribeRequest.binding:type_name -> a8s.agentc.v1.Binding
-	1,  // 18: a8s.agentc.v1.AgentcService.Prepare:input_type -> a8s.agentc.v1.PrepareRequest
-	4,  // 19: a8s.agentc.v1.AgentcService.Inspect:input_type -> a8s.agentc.v1.InspectRequest
-	6,  // 20: a8s.agentc.v1.AgentcService.SetAdmission:input_type -> a8s.agentc.v1.SetAdmissionRequest
-	8,  // 21: a8s.agentc.v1.AgentcService.Drain:input_type -> a8s.agentc.v1.DrainRequest
-	10, // 22: a8s.agentc.v1.AgentcService.Stop:input_type -> a8s.agentc.v1.StopRequest
-	12, // 23: a8s.agentc.v1.AgentcService.OpenThread:input_type -> a8s.agentc.v1.OpenThreadRequest
-	14, // 24: a8s.agentc.v1.AgentcService.SubmitInput:input_type -> a8s.agentc.v1.SubmitInputRequest
-	16, // 25: a8s.agentc.v1.AgentcService.GetInputResult:input_type -> a8s.agentc.v1.GetInputResultRequest
-	19, // 26: a8s.agentc.v1.AgentcService.Cancel:input_type -> a8s.agentc.v1.CancelRequest
-	21, // 27: a8s.agentc.v1.AgentcService.RespondInteraction:input_type -> a8s.agentc.v1.RespondInteractionRequest
-	23, // 28: a8s.agentc.v1.AgentcService.Subscribe:input_type -> a8s.agentc.v1.SubscribeRequest
-	2,  // 29: a8s.agentc.v1.AgentcService.Prepare:output_type -> a8s.agentc.v1.PrepareResponse
-	5,  // 30: a8s.agentc.v1.AgentcService.Inspect:output_type -> a8s.agentc.v1.InspectResponse
-	7,  // 31: a8s.agentc.v1.AgentcService.SetAdmission:output_type -> a8s.agentc.v1.SetAdmissionResponse
-	9,  // 32: a8s.agentc.v1.AgentcService.Drain:output_type -> a8s.agentc.v1.DrainResponse
-	11, // 33: a8s.agentc.v1.AgentcService.Stop:output_type -> a8s.agentc.v1.StopResponse
-	13, // 34: a8s.agentc.v1.AgentcService.OpenThread:output_type -> a8s.agentc.v1.OpenThreadResponse
-	15, // 35: a8s.agentc.v1.AgentcService.SubmitInput:output_type -> a8s.agentc.v1.SubmitInputResponse
-	17, // 36: a8s.agentc.v1.AgentcService.GetInputResult:output_type -> a8s.agentc.v1.GetInputResultResponse
-	20, // 37: a8s.agentc.v1.AgentcService.Cancel:output_type -> a8s.agentc.v1.CancelResponse
-	22, // 38: a8s.agentc.v1.AgentcService.RespondInteraction:output_type -> a8s.agentc.v1.RespondInteractionResponse
-	24, // 39: a8s.agentc.v1.AgentcService.Subscribe:output_type -> a8s.agentc.v1.SubscribeResponse
-	29, // [29:40] is the sub-list for method output_type
-	18, // [18:29] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	0,  // 11: a8s.agentc.v1.ReadThreadRequest.binding:type_name -> a8s.agentc.v1.Binding
+	14, // 12: a8s.agentc.v1.ReadThreadResponse.messages:type_name -> a8s.agentc.v1.ThreadMessage
+	0,  // 13: a8s.agentc.v1.SubmitInputRequest.binding:type_name -> a8s.agentc.v1.Binding
+	21, // 14: a8s.agentc.v1.SubmitInputResponse.result:type_name -> a8s.agentc.v1.InputResult
+	0,  // 15: a8s.agentc.v1.GetInputResultRequest.binding:type_name -> a8s.agentc.v1.Binding
+	21, // 16: a8s.agentc.v1.GetInputResultResponse.result:type_name -> a8s.agentc.v1.InputResult
+	0,  // 17: a8s.agentc.v1.CancelRequest.binding:type_name -> a8s.agentc.v1.Binding
+	0,  // 18: a8s.agentc.v1.RespondInteractionRequest.binding:type_name -> a8s.agentc.v1.Binding
+	0,  // 19: a8s.agentc.v1.SubscribeRequest.binding:type_name -> a8s.agentc.v1.Binding
+	1,  // 20: a8s.agentc.v1.AgentcService.Prepare:input_type -> a8s.agentc.v1.PrepareRequest
+	4,  // 21: a8s.agentc.v1.AgentcService.Inspect:input_type -> a8s.agentc.v1.InspectRequest
+	6,  // 22: a8s.agentc.v1.AgentcService.SetAdmission:input_type -> a8s.agentc.v1.SetAdmissionRequest
+	8,  // 23: a8s.agentc.v1.AgentcService.Drain:input_type -> a8s.agentc.v1.DrainRequest
+	10, // 24: a8s.agentc.v1.AgentcService.Stop:input_type -> a8s.agentc.v1.StopRequest
+	12, // 25: a8s.agentc.v1.AgentcService.OpenThread:input_type -> a8s.agentc.v1.OpenThreadRequest
+	15, // 26: a8s.agentc.v1.AgentcService.ReadThread:input_type -> a8s.agentc.v1.ReadThreadRequest
+	17, // 27: a8s.agentc.v1.AgentcService.SubmitInput:input_type -> a8s.agentc.v1.SubmitInputRequest
+	19, // 28: a8s.agentc.v1.AgentcService.GetInputResult:input_type -> a8s.agentc.v1.GetInputResultRequest
+	22, // 29: a8s.agentc.v1.AgentcService.Cancel:input_type -> a8s.agentc.v1.CancelRequest
+	24, // 30: a8s.agentc.v1.AgentcService.RespondInteraction:input_type -> a8s.agentc.v1.RespondInteractionRequest
+	26, // 31: a8s.agentc.v1.AgentcService.Subscribe:input_type -> a8s.agentc.v1.SubscribeRequest
+	2,  // 32: a8s.agentc.v1.AgentcService.Prepare:output_type -> a8s.agentc.v1.PrepareResponse
+	5,  // 33: a8s.agentc.v1.AgentcService.Inspect:output_type -> a8s.agentc.v1.InspectResponse
+	7,  // 34: a8s.agentc.v1.AgentcService.SetAdmission:output_type -> a8s.agentc.v1.SetAdmissionResponse
+	9,  // 35: a8s.agentc.v1.AgentcService.Drain:output_type -> a8s.agentc.v1.DrainResponse
+	11, // 36: a8s.agentc.v1.AgentcService.Stop:output_type -> a8s.agentc.v1.StopResponse
+	13, // 37: a8s.agentc.v1.AgentcService.OpenThread:output_type -> a8s.agentc.v1.OpenThreadResponse
+	16, // 38: a8s.agentc.v1.AgentcService.ReadThread:output_type -> a8s.agentc.v1.ReadThreadResponse
+	18, // 39: a8s.agentc.v1.AgentcService.SubmitInput:output_type -> a8s.agentc.v1.SubmitInputResponse
+	20, // 40: a8s.agentc.v1.AgentcService.GetInputResult:output_type -> a8s.agentc.v1.GetInputResultResponse
+	23, // 41: a8s.agentc.v1.AgentcService.Cancel:output_type -> a8s.agentc.v1.CancelResponse
+	25, // 42: a8s.agentc.v1.AgentcService.RespondInteraction:output_type -> a8s.agentc.v1.RespondInteractionResponse
+	27, // 43: a8s.agentc.v1.AgentcService.Subscribe:output_type -> a8s.agentc.v1.SubscribeResponse
+	32, // [32:44] is the sub-list for method output_type
+	20, // [20:32] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_a8s_agentc_v1_agentc_proto_init() }
@@ -1795,7 +2006,7 @@ func file_a8s_agentc_v1_agentc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_a8s_agentc_v1_agentc_proto_rawDesc), len(file_a8s_agentc_v1_agentc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   26,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

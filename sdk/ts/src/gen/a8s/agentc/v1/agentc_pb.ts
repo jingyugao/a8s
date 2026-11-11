@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file a8s/agentc/v1/agentc.proto.
  */
 export const file_a8s_agentc_v1_agentc: GenFile = /*@__PURE__*/
-  fileDesc("ChphOHMvYWdlbnRjL3YxL2FnZW50Yy5wcm90bxINYThzLmFnZW50Yy52MSJ9CgdCaW5kaW5nEg0KBXNjb3BlGAEgASgJEhUKDWRlcGxveW1lbnRfaWQYAiABKAkSFAoMd29ya3NwYWNlX2lkGAMgASgJEhMKC2luc3RhbmNlX2lkGAQgASgJEhIKCnJlbGVhc2VfaWQYBSABKAkSDQoFZXBvY2gYBiABKAQinAEKDlByZXBhcmVSZXF1ZXN0EicKB2JpbmRpbmcYASABKAsyFi5hOHMuYWdlbnRjLnYxLkJpbmRpbmcSFgoOcGFja2FnZV9kaWdlc3QYAiABKAkSEwoLaG9zdF9kaWdlc3QYAyABKAkSFwoPZXhlY19zZXJ2ZXJfdXJsGAQgASgJEhsKE3dvcmtzcGFjZV9kaXJlY3RvcnkYBSABKAkiNgoPUHJlcGFyZVJlc3BvbnNlEiMKBXJlYWR5GAEgASgLMhQuYThzLmFnZW50Yy52MS5SZWFkeSL3AQoFUmVhZHkSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZxINCgVyZWFkeRgCIAEoCBIWCg5wYWNrYWdlX2RpZ2VzdBgDIAEoCRITCgtob3N0X2RpZ2VzdBgEIAEoCRI8CgxjYXBhYmlsaXRpZXMYBSADKAsyJi5hOHMuYWdlbnRjLnYxLlJlYWR5LkNhcGFiaWxpdGllc0VudHJ5EhYKDmFkbWlzc2lvbl9vcGVuGAYgASgIGjMKEUNhcGFiaWxpdGllc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEiOQoOSW5zcGVjdFJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZyI2Cg9JbnNwZWN0UmVzcG9uc2USIwoFcmVhZHkYASABKAsyFC5hOHMuYWdlbnRjLnYxLlJlYWR5IkwKE1NldEFkbWlzc2lvblJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZxIMCgRvcGVuGAIgASgIIjsKFFNldEFkbWlzc2lvblJlc3BvbnNlEiMKBXJlYWR5GAEgASgLMhQuYThzLmFnZW50Yy52MS5SZWFkeSI3CgxEcmFpblJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZyLkAQoNRHJhaW5SZXNwb25zZRIYChBhZG1pc3Npb25fY2xvc2VkGAEgASgIEhQKDGFjdGl2ZV90dXJucxgCIAEoDRIVCg1xdWV1ZWRfaW5wdXRzGAMgASgNEhwKFHdhaXRpbmdfaW50ZXJhY3Rpb25zGAQgASgNEhYKDnRvb2xzX29ic2VydmVkGAUgASgIEhUKDXJ1bm5pbmdfdG9vbHMYBiABKA0SHgoWbmF0aXZlX3N0YXRlX3BlcnNpc3RlZBgHIAEoCBIPCgdkcmFpbmVkGAggASgIEg4KBnJlYXNvbhgJIAEoCSI2CgtTdG9wUmVxdWVzdBInCgdiaW5kaW5nGAEgASgLMhYuYThzLmFnZW50Yy52MS5CaW5kaW5nIlYKDFN0b3BSZXNwb25zZRIXCg9wcm9jZXNzX3N0b3BwZWQYASABKAgSHgoWbmF0aXZlX3N0YXRlX3BlcnNpc3RlZBgCIAEoCBINCgVzY29wZRgDIAEoCSJQChFPcGVuVGhyZWFkUmVxdWVzdBInCgdiaW5kaW5nGAEgASgLMhYuYThzLmFnZW50Yy52MS5CaW5kaW5nEhIKCnJlcXVlc3RfaWQYAiABKAkiJwoST3BlblRocmVhZFJlc3BvbnNlEhEKCXRocmVhZF9pZBgBIAEoCSKFAQoSU3VibWl0SW5wdXRSZXF1ZXN0EicKB2JpbmRpbmcYASABKAsyFi5hOHMuYWdlbnRjLnYxLkJpbmRpbmcSEgoKcmVxdWVzdF9pZBgCIAEoCRIRCgl0aHJlYWRfaWQYAyABKAkSDAoEdGV4dBgEIAEoCRIRCglhdXRob3JfaWQYBSABKAkiQQoTU3VibWl0SW5wdXRSZXNwb25zZRIqCgZyZXN1bHQYASABKAsyGi5hOHMuYWdlbnRjLnYxLklucHV0UmVzdWx0IngKFUdldElucHV0UmVzdWx0UmVxdWVzdBInCgdiaW5kaW5nGAEgASgLMhYuYThzLmFnZW50Yy52MS5CaW5kaW5nEhIKCnJlcXVlc3RfaWQYAiABKAkSEQoJdGhyZWFkX2lkGAMgASgJEg8KB3R1cm5faWQYBCABKAkiRAoWR2V0SW5wdXRSZXN1bHRSZXNwb25zZRIqCgZyZXN1bHQYASABKAsyGi5hOHMuYWdlbnRjLnYxLklucHV0UmVzdWx0IoEBCgtJbnB1dFJlc3VsdBISCgpyZXF1ZXN0X2lkGAEgASgJEhEKCXRocmVhZF9pZBgCIAEoCRIPCgd0dXJuX2lkGAMgASgJEhYKDm5hdGl2ZV9yZWNlaXB0GAQgASgJEg0KBXN0YXRlGAUgASgJEhMKC291dHB1dF90ZXh0GAYgASgJInAKDUNhbmNlbFJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZxISCgpyZXF1ZXN0X2lkGAIgASgJEhEKCXRocmVhZF9pZBgDIAEoCRIPCgd0dXJuX2lkGAQgASgJIjMKDkNhbmNlbFJlc3BvbnNlEhAKCGFjY2VwdGVkGAEgASgIEg8KB3N0b3BwZWQYAiABKAgipgEKGVJlc3BvbmRJbnRlcmFjdGlvblJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZxISCgpyZXF1ZXN0X2lkGAIgASgJEhEKCXRocmVhZF9pZBgDIAEoCRIPCgd0dXJuX2lkGAQgASgJEhYKDmludGVyYWN0aW9uX2lkGAUgASgJEhAKCGRlY2lzaW9uGAYgASgJIi4KGlJlc3BvbmRJbnRlcmFjdGlvblJlc3BvbnNlEhAKCGFjY2VwdGVkGAEgASgIIk4KEFN1YnNjcmliZVJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZxIRCgl0aHJlYWRfaWQYAiABKAkilwEKEVN1YnNjcmliZVJlc3BvbnNlEhAKCGV2ZW50X2lkGAEgASgJEhEKCXRocmVhZF9pZBgCIAEoCRIPCgd0dXJuX2lkGAMgASgJEgwKBHR5cGUYBCABKAkSDAoEdGV4dBgFIAEoCRIWCg5pbnRlcmFjdGlvbl9pZBgGIAEoCRIYChBpbnRlcmFjdGlvbl9raW5kGAcgASgJMo0HCg1BZ2VudGNTZXJ2aWNlEkgKB1ByZXBhcmUSHS5hOHMuYWdlbnRjLnYxLlByZXBhcmVSZXF1ZXN0Gh4uYThzLmFnZW50Yy52MS5QcmVwYXJlUmVzcG9uc2USSAoHSW5zcGVjdBIdLmE4cy5hZ2VudGMudjEuSW5zcGVjdFJlcXVlc3QaHi5hOHMuYWdlbnRjLnYxLkluc3BlY3RSZXNwb25zZRJXCgxTZXRBZG1pc3Npb24SIi5hOHMuYWdlbnRjLnYxLlNldEFkbWlzc2lvblJlcXVlc3QaIy5hOHMuYWdlbnRjLnYxLlNldEFkbWlzc2lvblJlc3BvbnNlEkIKBURyYWluEhsuYThzLmFnZW50Yy52MS5EcmFpblJlcXVlc3QaHC5hOHMuYWdlbnRjLnYxLkRyYWluUmVzcG9uc2USPwoEU3RvcBIaLmE4cy5hZ2VudGMudjEuU3RvcFJlcXVlc3QaGy5hOHMuYWdlbnRjLnYxLlN0b3BSZXNwb25zZRJRCgpPcGVuVGhyZWFkEiAuYThzLmFnZW50Yy52MS5PcGVuVGhyZWFkUmVxdWVzdBohLmE4cy5hZ2VudGMudjEuT3BlblRocmVhZFJlc3BvbnNlElQKC1N1Ym1pdElucHV0EiEuYThzLmFnZW50Yy52MS5TdWJtaXRJbnB1dFJlcXVlc3QaIi5hOHMuYWdlbnRjLnYxLlN1Ym1pdElucHV0UmVzcG9uc2USXQoOR2V0SW5wdXRSZXN1bHQSJC5hOHMuYWdlbnRjLnYxLkdldElucHV0UmVzdWx0UmVxdWVzdBolLmE4cy5hZ2VudGMudjEuR2V0SW5wdXRSZXN1bHRSZXNwb25zZRJFCgZDYW5jZWwSHC5hOHMuYWdlbnRjLnYxLkNhbmNlbFJlcXVlc3QaHS5hOHMuYWdlbnRjLnYxLkNhbmNlbFJlc3BvbnNlEmkKElJlc3BvbmRJbnRlcmFjdGlvbhIoLmE4cy5hZ2VudGMudjEuUmVzcG9uZEludGVyYWN0aW9uUmVxdWVzdBopLmE4cy5hZ2VudGMudjEuUmVzcG9uZEludGVyYWN0aW9uUmVzcG9uc2USUAoJU3Vic2NyaWJlEh8uYThzLmFnZW50Yy52MS5TdWJzY3JpYmVSZXF1ZXN0GiAuYThzLmFnZW50Yy52MS5TdWJzY3JpYmVSZXNwb25zZTABQkVaQ2dpdGh1Yi5jb20vamluZ3l1Z2FvL2E4cy9hZ2VudGMvY29udHJhY3QvZ2VuL2E4cy9hZ2VudGMvdjE7YWdlbnRjdjFiBnByb3RvMw");
+  fileDesc("ChphOHMvYWdlbnRjL3YxL2FnZW50Yy5wcm90bxINYThzLmFnZW50Yy52MSJ9CgdCaW5kaW5nEg0KBXNjb3BlGAEgASgJEhUKDWRlcGxveW1lbnRfaWQYAiABKAkSFAoMd29ya3NwYWNlX2lkGAMgASgJEhMKC2luc3RhbmNlX2lkGAQgASgJEhIKCnJlbGVhc2VfaWQYBSABKAkSDQoFZXBvY2gYBiABKAQinAEKDlByZXBhcmVSZXF1ZXN0EicKB2JpbmRpbmcYASABKAsyFi5hOHMuYWdlbnRjLnYxLkJpbmRpbmcSFgoOcGFja2FnZV9kaWdlc3QYAiABKAkSEwoLaG9zdF9kaWdlc3QYAyABKAkSFwoPZXhlY19zZXJ2ZXJfdXJsGAQgASgJEhsKE3dvcmtzcGFjZV9kaXJlY3RvcnkYBSABKAkiNgoPUHJlcGFyZVJlc3BvbnNlEiMKBXJlYWR5GAEgASgLMhQuYThzLmFnZW50Yy52MS5SZWFkeSL3AQoFUmVhZHkSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZxINCgVyZWFkeRgCIAEoCBIWCg5wYWNrYWdlX2RpZ2VzdBgDIAEoCRITCgtob3N0X2RpZ2VzdBgEIAEoCRI8CgxjYXBhYmlsaXRpZXMYBSADKAsyJi5hOHMuYWdlbnRjLnYxLlJlYWR5LkNhcGFiaWxpdGllc0VudHJ5EhYKDmFkbWlzc2lvbl9vcGVuGAYgASgIGjMKEUNhcGFiaWxpdGllc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEiOQoOSW5zcGVjdFJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZyI2Cg9JbnNwZWN0UmVzcG9uc2USIwoFcmVhZHkYASABKAsyFC5hOHMuYWdlbnRjLnYxLlJlYWR5IkwKE1NldEFkbWlzc2lvblJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZxIMCgRvcGVuGAIgASgIIjsKFFNldEFkbWlzc2lvblJlc3BvbnNlEiMKBXJlYWR5GAEgASgLMhQuYThzLmFnZW50Yy52MS5SZWFkeSI3CgxEcmFpblJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZyLkAQoNRHJhaW5SZXNwb25zZRIYChBhZG1pc3Npb25fY2xvc2VkGAEgASgIEhQKDGFjdGl2ZV90dXJucxgCIAEoDRIVCg1xdWV1ZWRfaW5wdXRzGAMgASgNEhwKFHdhaXRpbmdfaW50ZXJhY3Rpb25zGAQgASgNEhYKDnRvb2xzX29ic2VydmVkGAUgASgIEhUKDXJ1bm5pbmdfdG9vbHMYBiABKA0SHgoWbmF0aXZlX3N0YXRlX3BlcnNpc3RlZBgHIAEoCBIPCgdkcmFpbmVkGAggASgIEg4KBnJlYXNvbhgJIAEoCSI2CgtTdG9wUmVxdWVzdBInCgdiaW5kaW5nGAEgASgLMhYuYThzLmFnZW50Yy52MS5CaW5kaW5nIlYKDFN0b3BSZXNwb25zZRIXCg9wcm9jZXNzX3N0b3BwZWQYASABKAgSHgoWbmF0aXZlX3N0YXRlX3BlcnNpc3RlZBgCIAEoCBINCgVzY29wZRgDIAEoCSJQChFPcGVuVGhyZWFkUmVxdWVzdBInCgdiaW5kaW5nGAEgASgLMhYuYThzLmFnZW50Yy52MS5CaW5kaW5nEhIKCnJlcXVlc3RfaWQYAiABKAkiJwoST3BlblRocmVhZFJlc3BvbnNlEhEKCXRocmVhZF9pZBgBIAEoCSJQCg1UaHJlYWRNZXNzYWdlEgwKBHJvbGUYASABKAkSDAoEdGV4dBgCIAEoCRIPCgd0dXJuX2lkGAMgASgJEhIKCnJlcXVlc3RfaWQYBCABKAkiegoRUmVhZFRocmVhZFJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZxIRCgl0aHJlYWRfaWQYAiABKAkSFgoOYmVmb3JlX3R1cm5faWQYAyABKAkSEQoJcGFnZV9zaXplGAQgASgNImEKElJlYWRUaHJlYWRSZXNwb25zZRIuCghtZXNzYWdlcxgBIAMoCzIcLmE4cy5hZ2VudGMudjEuVGhyZWFkTWVzc2FnZRIbChNuZXh0X2JlZm9yZV90dXJuX2lkGAIgASgJIoUBChJTdWJtaXRJbnB1dFJlcXVlc3QSJwoHYmluZGluZxgBIAEoCzIWLmE4cy5hZ2VudGMudjEuQmluZGluZxISCgpyZXF1ZXN0X2lkGAIgASgJEhEKCXRocmVhZF9pZBgDIAEoCRIMCgR0ZXh0GAQgASgJEhEKCWF1dGhvcl9pZBgFIAEoCSJBChNTdWJtaXRJbnB1dFJlc3BvbnNlEioKBnJlc3VsdBgBIAEoCzIaLmE4cy5hZ2VudGMudjEuSW5wdXRSZXN1bHQieAoVR2V0SW5wdXRSZXN1bHRSZXF1ZXN0EicKB2JpbmRpbmcYASABKAsyFi5hOHMuYWdlbnRjLnYxLkJpbmRpbmcSEgoKcmVxdWVzdF9pZBgCIAEoCRIRCgl0aHJlYWRfaWQYAyABKAkSDwoHdHVybl9pZBgEIAEoCSJEChZHZXRJbnB1dFJlc3VsdFJlc3BvbnNlEioKBnJlc3VsdBgBIAEoCzIaLmE4cy5hZ2VudGMudjEuSW5wdXRSZXN1bHQigQEKC0lucHV0UmVzdWx0EhIKCnJlcXVlc3RfaWQYASABKAkSEQoJdGhyZWFkX2lkGAIgASgJEg8KB3R1cm5faWQYAyABKAkSFgoObmF0aXZlX3JlY2VpcHQYBCABKAkSDQoFc3RhdGUYBSABKAkSEwoLb3V0cHV0X3RleHQYBiABKAkicAoNQ2FuY2VsUmVxdWVzdBInCgdiaW5kaW5nGAEgASgLMhYuYThzLmFnZW50Yy52MS5CaW5kaW5nEhIKCnJlcXVlc3RfaWQYAiABKAkSEQoJdGhyZWFkX2lkGAMgASgJEg8KB3R1cm5faWQYBCABKAkiMwoOQ2FuY2VsUmVzcG9uc2USEAoIYWNjZXB0ZWQYASABKAgSDwoHc3RvcHBlZBgCIAEoCCKmAQoZUmVzcG9uZEludGVyYWN0aW9uUmVxdWVzdBInCgdiaW5kaW5nGAEgASgLMhYuYThzLmFnZW50Yy52MS5CaW5kaW5nEhIKCnJlcXVlc3RfaWQYAiABKAkSEQoJdGhyZWFkX2lkGAMgASgJEg8KB3R1cm5faWQYBCABKAkSFgoOaW50ZXJhY3Rpb25faWQYBSABKAkSEAoIZGVjaXNpb24YBiABKAkiLgoaUmVzcG9uZEludGVyYWN0aW9uUmVzcG9uc2USEAoIYWNjZXB0ZWQYASABKAgiTgoQU3Vic2NyaWJlUmVxdWVzdBInCgdiaW5kaW5nGAEgASgLMhYuYThzLmFnZW50Yy52MS5CaW5kaW5nEhEKCXRocmVhZF9pZBgCIAEoCSKXAQoRU3Vic2NyaWJlUmVzcG9uc2USEAoIZXZlbnRfaWQYASABKAkSEQoJdGhyZWFkX2lkGAIgASgJEg8KB3R1cm5faWQYAyABKAkSDAoEdHlwZRgEIAEoCRIMCgR0ZXh0GAUgASgJEhYKDmludGVyYWN0aW9uX2lkGAYgASgJEhgKEGludGVyYWN0aW9uX2tpbmQYByABKAky4AcKDUFnZW50Y1NlcnZpY2USSAoHUHJlcGFyZRIdLmE4cy5hZ2VudGMudjEuUHJlcGFyZVJlcXVlc3QaHi5hOHMuYWdlbnRjLnYxLlByZXBhcmVSZXNwb25zZRJICgdJbnNwZWN0Eh0uYThzLmFnZW50Yy52MS5JbnNwZWN0UmVxdWVzdBoeLmE4cy5hZ2VudGMudjEuSW5zcGVjdFJlc3BvbnNlElcKDFNldEFkbWlzc2lvbhIiLmE4cy5hZ2VudGMudjEuU2V0QWRtaXNzaW9uUmVxdWVzdBojLmE4cy5hZ2VudGMudjEuU2V0QWRtaXNzaW9uUmVzcG9uc2USQgoFRHJhaW4SGy5hOHMuYWdlbnRjLnYxLkRyYWluUmVxdWVzdBocLmE4cy5hZ2VudGMudjEuRHJhaW5SZXNwb25zZRI/CgRTdG9wEhouYThzLmFnZW50Yy52MS5TdG9wUmVxdWVzdBobLmE4cy5hZ2VudGMudjEuU3RvcFJlc3BvbnNlElEKCk9wZW5UaHJlYWQSIC5hOHMuYWdlbnRjLnYxLk9wZW5UaHJlYWRSZXF1ZXN0GiEuYThzLmFnZW50Yy52MS5PcGVuVGhyZWFkUmVzcG9uc2USUQoKUmVhZFRocmVhZBIgLmE4cy5hZ2VudGMudjEuUmVhZFRocmVhZFJlcXVlc3QaIS5hOHMuYWdlbnRjLnYxLlJlYWRUaHJlYWRSZXNwb25zZRJUCgtTdWJtaXRJbnB1dBIhLmE4cy5hZ2VudGMudjEuU3VibWl0SW5wdXRSZXF1ZXN0GiIuYThzLmFnZW50Yy52MS5TdWJtaXRJbnB1dFJlc3BvbnNlEl0KDkdldElucHV0UmVzdWx0EiQuYThzLmFnZW50Yy52MS5HZXRJbnB1dFJlc3VsdFJlcXVlc3QaJS5hOHMuYWdlbnRjLnYxLkdldElucHV0UmVzdWx0UmVzcG9uc2USRQoGQ2FuY2VsEhwuYThzLmFnZW50Yy52MS5DYW5jZWxSZXF1ZXN0Gh0uYThzLmFnZW50Yy52MS5DYW5jZWxSZXNwb25zZRJpChJSZXNwb25kSW50ZXJhY3Rpb24SKC5hOHMuYWdlbnRjLnYxLlJlc3BvbmRJbnRlcmFjdGlvblJlcXVlc3QaKS5hOHMuYWdlbnRjLnYxLlJlc3BvbmRJbnRlcmFjdGlvblJlc3BvbnNlElAKCVN1YnNjcmliZRIfLmE4cy5hZ2VudGMudjEuU3Vic2NyaWJlUmVxdWVzdBogLmE4cy5hZ2VudGMudjEuU3Vic2NyaWJlUmVzcG9uc2UwAUJFWkNnaXRodWIuY29tL2ppbmd5dWdhby9hOHMvYWdlbnRjL2NvbnRyYWN0L2dlbi9hOHMvYWdlbnRjL3YxO2FnZW50Y3YxYgZwcm90bzM");
 
 /**
  * Scope is an opaque authorized resource scope, interpreted by the application.
@@ -385,6 +385,92 @@ export const OpenThreadResponseSchema: GenMessage<OpenThreadResponse> = /*@__PUR
   messageDesc(file_a8s_agentc_v1_agentc, 13);
 
 /**
+ * @generated from message a8s.agentc.v1.ThreadMessage
+ */
+export type ThreadMessage = Message<"a8s.agentc.v1.ThreadMessage"> & {
+  /**
+   * @generated from field: string role = 1;
+   */
+  role: string;
+
+  /**
+   * @generated from field: string text = 2;
+   */
+  text: string;
+
+  /**
+   * @generated from field: string turn_id = 3;
+   */
+  turnId: string;
+
+  /**
+   * @generated from field: string request_id = 4;
+   */
+  requestId: string;
+};
+
+/**
+ * Describes the message a8s.agentc.v1.ThreadMessage.
+ * Use `create(ThreadMessageSchema)` to create a new message.
+ */
+export const ThreadMessageSchema: GenMessage<ThreadMessage> = /*@__PURE__*/
+  messageDesc(file_a8s_agentc_v1_agentc, 14);
+
+/**
+ * @generated from message a8s.agentc.v1.ReadThreadRequest
+ */
+export type ReadThreadRequest = Message<"a8s.agentc.v1.ReadThreadRequest"> & {
+  /**
+   * @generated from field: a8s.agentc.v1.Binding binding = 1;
+   */
+  binding?: Binding | undefined;
+
+  /**
+   * @generated from field: string thread_id = 2;
+   */
+  threadId: string;
+
+  /**
+   * @generated from field: string before_turn_id = 3;
+   */
+  beforeTurnId: string;
+
+  /**
+   * @generated from field: uint32 page_size = 4;
+   */
+  pageSize: number;
+};
+
+/**
+ * Describes the message a8s.agentc.v1.ReadThreadRequest.
+ * Use `create(ReadThreadRequestSchema)` to create a new message.
+ */
+export const ReadThreadRequestSchema: GenMessage<ReadThreadRequest> = /*@__PURE__*/
+  messageDesc(file_a8s_agentc_v1_agentc, 15);
+
+/**
+ * @generated from message a8s.agentc.v1.ReadThreadResponse
+ */
+export type ReadThreadResponse = Message<"a8s.agentc.v1.ReadThreadResponse"> & {
+  /**
+   * @generated from field: repeated a8s.agentc.v1.ThreadMessage messages = 1;
+   */
+  messages: ThreadMessage[];
+
+  /**
+   * @generated from field: string next_before_turn_id = 2;
+   */
+  nextBeforeTurnId: string;
+};
+
+/**
+ * Describes the message a8s.agentc.v1.ReadThreadResponse.
+ * Use `create(ReadThreadResponseSchema)` to create a new message.
+ */
+export const ReadThreadResponseSchema: GenMessage<ReadThreadResponse> = /*@__PURE__*/
+  messageDesc(file_a8s_agentc_v1_agentc, 16);
+
+/**
  * @generated from message a8s.agentc.v1.SubmitInputRequest
  */
 export type SubmitInputRequest = Message<"a8s.agentc.v1.SubmitInputRequest"> & {
@@ -419,7 +505,7 @@ export type SubmitInputRequest = Message<"a8s.agentc.v1.SubmitInputRequest"> & {
  * Use `create(SubmitInputRequestSchema)` to create a new message.
  */
 export const SubmitInputRequestSchema: GenMessage<SubmitInputRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 14);
+  messageDesc(file_a8s_agentc_v1_agentc, 17);
 
 /**
  * @generated from message a8s.agentc.v1.SubmitInputResponse
@@ -436,7 +522,7 @@ export type SubmitInputResponse = Message<"a8s.agentc.v1.SubmitInputResponse"> &
  * Use `create(SubmitInputResponseSchema)` to create a new message.
  */
 export const SubmitInputResponseSchema: GenMessage<SubmitInputResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 15);
+  messageDesc(file_a8s_agentc_v1_agentc, 18);
 
 /**
  * @generated from message a8s.agentc.v1.GetInputResultRequest
@@ -468,7 +554,7 @@ export type GetInputResultRequest = Message<"a8s.agentc.v1.GetInputResultRequest
  * Use `create(GetInputResultRequestSchema)` to create a new message.
  */
 export const GetInputResultRequestSchema: GenMessage<GetInputResultRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 16);
+  messageDesc(file_a8s_agentc_v1_agentc, 19);
 
 /**
  * @generated from message a8s.agentc.v1.GetInputResultResponse
@@ -485,7 +571,7 @@ export type GetInputResultResponse = Message<"a8s.agentc.v1.GetInputResultRespon
  * Use `create(GetInputResultResponseSchema)` to create a new message.
  */
 export const GetInputResultResponseSchema: GenMessage<GetInputResultResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 17);
+  messageDesc(file_a8s_agentc_v1_agentc, 20);
 
 /**
  * @generated from message a8s.agentc.v1.InputResult
@@ -529,7 +615,7 @@ export type InputResult = Message<"a8s.agentc.v1.InputResult"> & {
  * Use `create(InputResultSchema)` to create a new message.
  */
 export const InputResultSchema: GenMessage<InputResult> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 18);
+  messageDesc(file_a8s_agentc_v1_agentc, 21);
 
 /**
  * @generated from message a8s.agentc.v1.CancelRequest
@@ -561,7 +647,7 @@ export type CancelRequest = Message<"a8s.agentc.v1.CancelRequest"> & {
  * Use `create(CancelRequestSchema)` to create a new message.
  */
 export const CancelRequestSchema: GenMessage<CancelRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 19);
+  messageDesc(file_a8s_agentc_v1_agentc, 22);
 
 /**
  * @generated from message a8s.agentc.v1.CancelResponse
@@ -583,7 +669,7 @@ export type CancelResponse = Message<"a8s.agentc.v1.CancelResponse"> & {
  * Use `create(CancelResponseSchema)` to create a new message.
  */
 export const CancelResponseSchema: GenMessage<CancelResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 20);
+  messageDesc(file_a8s_agentc_v1_agentc, 23);
 
 /**
  * @generated from message a8s.agentc.v1.RespondInteractionRequest
@@ -627,7 +713,7 @@ export type RespondInteractionRequest = Message<"a8s.agentc.v1.RespondInteractio
  * Use `create(RespondInteractionRequestSchema)` to create a new message.
  */
 export const RespondInteractionRequestSchema: GenMessage<RespondInteractionRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 21);
+  messageDesc(file_a8s_agentc_v1_agentc, 24);
 
 /**
  * @generated from message a8s.agentc.v1.RespondInteractionResponse
@@ -644,7 +730,7 @@ export type RespondInteractionResponse = Message<"a8s.agentc.v1.RespondInteracti
  * Use `create(RespondInteractionResponseSchema)` to create a new message.
  */
 export const RespondInteractionResponseSchema: GenMessage<RespondInteractionResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 22);
+  messageDesc(file_a8s_agentc_v1_agentc, 25);
 
 /**
  * @generated from message a8s.agentc.v1.SubscribeRequest
@@ -666,7 +752,7 @@ export type SubscribeRequest = Message<"a8s.agentc.v1.SubscribeRequest"> & {
  * Use `create(SubscribeRequestSchema)` to create a new message.
  */
 export const SubscribeRequestSchema: GenMessage<SubscribeRequest> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 23);
+  messageDesc(file_a8s_agentc_v1_agentc, 26);
 
 /**
  * @generated from message a8s.agentc.v1.SubscribeResponse
@@ -715,7 +801,7 @@ export type SubscribeResponse = Message<"a8s.agentc.v1.SubscribeResponse"> & {
  * Use `create(SubscribeResponseSchema)` to create a new message.
  */
 export const SubscribeResponseSchema: GenMessage<SubscribeResponse> = /*@__PURE__*/
-  messageDesc(file_a8s_agentc_v1_agentc, 24);
+  messageDesc(file_a8s_agentc_v1_agentc, 27);
 
 /**
  * @generated from service a8s.agentc.v1.AgentcService
@@ -768,6 +854,14 @@ export const AgentcService: GenService<{
     methodKind: "unary";
     input: typeof OpenThreadRequestSchema;
     output: typeof OpenThreadResponseSchema;
+  },
+  /**
+   * @generated from rpc a8s.agentc.v1.AgentcService.ReadThread
+   */
+  readThread: {
+    methodKind: "unary";
+    input: typeof ReadThreadRequestSchema;
+    output: typeof ReadThreadResponseSchema;
   },
   /**
    * @generated from rpc a8s.agentc.v1.AgentcService.SubmitInput
